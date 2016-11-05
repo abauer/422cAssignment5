@@ -28,6 +28,11 @@ public class Critter4 extends Critter {
     }
 
     @Override
+    public CritterShape viewShape() {
+        return null;
+    }
+
+    @Override
     public String toString() { return "4"; }
 
     public boolean fight(String opponent) {

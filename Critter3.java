@@ -19,6 +19,11 @@ package assignment5;
  */
 public class Critter3 extends Critter {
     @Override
+    public CritterShape viewShape() {
+        return null;
+    }
+
+    @Override
     public String toString() {
         return "3"; //intended to be a " " (space
     }

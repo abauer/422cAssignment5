@@ -22,6 +22,11 @@ public class MyCritter5 extends TestCritter {
 	}
 
 	@Override
+	public CritterShape viewShape() {
+		return null;
+	}
+
+	@Override
 	public String toString () {
 		return "5";
 	}

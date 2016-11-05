@@ -10,6 +10,14 @@
  * Fall 2016
  */
 package assignment5; // cannot be in default package
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
@@ -22,8 +30,10 @@ import java.util.ServiceLoader;
  * input file is optional.  If input file is specified, the word 'test' is optional.
  * May not use 'test' argument without specifying input file.
  */
-public class Main {
+public class Main extends Application {
 
+	BorderPane main = new BorderPane();
+	GridPane grid = new GridPane();
     static Scanner kb;	// scanner connected to keyboard input, or input file
     private static String inputFile;	// input file, used instead of keyboard input if specified
     static ByteArrayOutputStream testOutputString;	// if test specified, holds all console output
@@ -43,6 +53,25 @@ public class Main {
      * and the second is test (for test output, where all output to be directed to a String), or nothing.
      */
     public static void main(String[] args) {
+		launch(args);
+	}
+
+	public void start(Stage primaryStage) {
+		try {
+			grid.setGridLinesVisible(true);
+			main.setCenter(grid);
+			grid.setHgap(5);   //10
+			grid.setVgap(10);
+			grid.setPadding(new Insets(25,25,25,25));  //5555
+			Scene scene = new Scene(grid, 500, 500);
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void unused(String[] args){
         Iterator it = ServiceLoader.loadInstalled(Critter.class).iterator();
         while (it.hasNext()) {
             System.out.println(it.next());

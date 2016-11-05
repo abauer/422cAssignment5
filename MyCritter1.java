@@ -14,7 +14,12 @@ public class MyCritter1 extends Critter.TestCritter {
 		if (getEnergy() > 10) return true;
 		return false;
 	}
-	
+
+	@Override
+	public CritterShape viewShape() {
+		return null;
+	}
+
 	public String toString() {
 		return "1";
 	}

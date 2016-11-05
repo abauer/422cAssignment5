@@ -15,7 +15,12 @@ package assignment5;
  * Example critter
  */
 public class Craig extends Critter {
-	
+
+	@Override
+	public CritterShape viewShape() {
+		return null;
+	}
+
 	@Override
 	public String toString() { return "C"; }
 	
