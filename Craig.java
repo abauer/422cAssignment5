@@ -1,5 +1,19 @@
-package assignment5;
+/* CRITTERS Craig.java
+ * EE422C Project 4 submission by
+ * Anthony Bauer
+ * amb6869
+ * 16480
+ * Grant Uy
+ * gau84
+ * 61480
+ * Slip days used: <0>
+ * Fall 2016
+ */
+package assignment4;
 
+/*
+ * Example critter
+ */
 public class Craig extends Critter {
 	
 	@Override
@@ -69,11 +83,4 @@ public class Craig extends Critter {
 		System.out.print("" + total_left / (GENE_TOTAL * 0.01 * craigs.size()) + "% left   ");
 		System.out.println();
 	}
-	
-	@Override
-	public CritterShape viewShape() { return CritterShape.SQUARE; }
-
-	@Override
-	public javafx.scene.paint.Color viewOutlineColor() { return javafx.scene.paint.Color.BLUE; }
-
 }
