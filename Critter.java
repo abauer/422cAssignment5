@@ -155,6 +155,7 @@ public abstract class Critter {
 	public abstract boolean fight(String opponent);
 
 	protected String look(int direction, boolean steps) {
+        energy -= Params.look_energy_cost;
         int distance = steps ? 2 : 1;
         int x = x_coord;
         int y = y_coord;
