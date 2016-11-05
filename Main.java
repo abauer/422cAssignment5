@@ -18,8 +18,6 @@ import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -39,6 +37,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.ServiceLoader;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /*
@@ -70,7 +70,25 @@ public class Main extends Application {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
-		launch(Main.class, args);
+//        File[] pkgFiles = new File("./src/assignment5").listFiles();
+//        if (pkgFiles == null) {
+//            System.err.println("Something's wrong with the package structure...");
+//            System.exit(1);
+//        }
+//        List<String> critClasses = Stream.of(pkgFiles)
+//            .map(File::getName) // convert to names
+//            .filter(s -> s.endsWith(".java")) // get class files
+//            .map(s -> s.substring(0, s.length() - 5)) // strip extension
+//            .filter(s -> { // save only subclasses of critter
+//                try {
+//                    return !s.equals("Critter") && Critter.class.isAssignableFrom(Class.forName(myPackage+"."+s));
+//                } catch (Exception e) {
+//                    return false;
+//                }
+//            })
+//            .collect(Collectors.toList());
+//        System.out.println(critClasses);
+        launch(Main.class, args);
 	}
 
 	@Override
