@@ -9,7 +9,7 @@
  * Slip days used: <0>
  * Fall 2016
  */
-package assignment4;
+package assignment5;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,6 +18,33 @@ public abstract class Critter {
 	private static String myPackage;
 	private	static List<Critter> population = new ArrayList<>();
 	private static List<Critter> babies = new ArrayList<>();
+
+	public enum CritterShape {
+		CIRCLE,
+		SQUARE,
+		TRIANGLE,
+		DIAMOND,
+		STAR
+	}
+
+	/* the default color is white, which I hope makes critters invisible by default
+	 * If you change the background color of your View component, then update the default
+	 * color to be the same as you background
+	 *
+	 * critters must override at least one of the following three methods, it is not
+	 * proper for critters to remain invisible in the view
+	 *
+	 * If a critter only overrides the outline color, then it will look like a non-filled
+	 * shape, at least, that's the intent. You can edit these default methods however you
+	 * need to, but please preserve that intent as you implement them.
+	 */
+    public javafx.scene.paint.Color viewColor() {
+        return javafx.scene.paint.Color.WHITE;
+    }
+
+    public javafx.scene.paint.Color viewOutlineColor() { return viewColor(); }
+    public javafx.scene.paint.Color viewFillColor() { return viewColor(); }
+    public abstract CritterShape viewShape();
 
 	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
 	static {
@@ -126,6 +153,8 @@ public abstract class Critter {
      * @return whether or not the Critter wants to fight
      */
 	public abstract boolean fight(String opponent);
+
+	protected String look(int direction, boolean steps) {return "";}
 	
 	/**
 	 * create and initialize a Critter subclass.

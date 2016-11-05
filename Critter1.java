@@ -10,7 +10,7 @@
  * Fall 2016
  */
 
-package assignment4;
+package assignment5;
 
 /**
  * Critter1

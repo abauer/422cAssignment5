@@ -9,7 +9,7 @@
  * Slip days used: <0>
  * Fall 2016
  */
-package assignment4; // cannot be in default package
+package assignment5; // cannot be in default package
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;

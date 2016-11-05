@@ -1,6 +1,6 @@
-package assignment4;
+package assignment5;
 
-import assignment4.Critter.TestCritter;
+import assignment5.Critter.TestCritter;
 
 public class MyCritter5 extends TestCritter {
 	

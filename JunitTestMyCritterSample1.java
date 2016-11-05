@@ -1,4 +1,4 @@
-package assignment4;
+package assignment5;
 
 import static org.junit.Assert.*;
 
@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import assignment4.Critter.TestCritter;
+import assignment5.Critter.TestCritter;
 import java.awt.Point;
 public class JunitTestMyCritterSample1 {
 

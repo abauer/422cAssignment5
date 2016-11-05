@@ -9,11 +9,11 @@
  * Slip days used: <0>
  * Fall 2016
  */
-package assignment4;
+package assignment5;
 /*
  * Do not change this file.
  */
-import assignment4.Critter.TestCritter;
+import assignment5.Critter.TestCritter;
 
 public class Algae extends TestCritter {
 

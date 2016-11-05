@@ -9,7 +9,7 @@
  * Slip days used: <0>
  * Fall 2016
  */
-package assignment4;
+package assignment5;
 
 /**
  * SquareCritters have a unique movement pattern: they always move in a square shape.

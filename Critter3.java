@@ -10,7 +10,7 @@
  * Fall 2016
  */
 
-package assignment4;
+package assignment5;
 
 /**
  * NinjaCritters are special because they don't show up on the map; their String representation is a space.

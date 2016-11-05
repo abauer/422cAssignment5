@@ -1,4 +1,4 @@
-package assignment4;
+package assignment5;
 
 /*
  * This Critter is good for testing running away while fighting, and for testing 
