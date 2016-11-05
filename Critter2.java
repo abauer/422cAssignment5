@@ -20,6 +20,11 @@ package assignment5;
 public class Critter2 extends Critter {
 
     @Override
+    public CritterShape viewShape() {
+        return null;
+    }
+
+    @Override
     public String toString() { return "2"; }
 
     private int dir;

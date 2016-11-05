@@ -17,6 +17,11 @@ import assignment5.Critter.TestCritter;
 
 public class Algae extends TestCritter {
 
+	@Override
+	public CritterShape viewShape() {
+		return null;
+	}
+
 	public String toString() { return "@"; }
 	
 	public boolean fight(String not_used) { return false; }
