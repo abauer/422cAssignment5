@@ -163,7 +163,35 @@ public abstract class Critter {
      */
 	public abstract boolean fight(String opponent);
 
-	protected String look(int direction, boolean steps) {return "";}
+	protected String look(int direction, boolean steps) {
+        energy -= Params.look_energy_cost;
+        int distance = steps ? 2 : 1;
+        int x = x_coord;
+        int y = y_coord;
+        // right
+        if (direction == 7 || direction == 0 || direction == 1)
+            x = (x_coord+distance)%Params.world_width;
+        // left
+        else if (direction == 3 || direction == 4 || direction == 5)
+            x = (x_coord-distance)%Params.world_width;
+        // up
+        if (direction == 1 || direction == 2 || direction == 3)
+            y = (y_coord-distance)%Params.world_height;
+        // down
+        else if (direction == 5 || direction == 6 || direction == 7)
+            y = (y_coord+distance)%Params.world_height;
+        // return
+        if (isCached) {
+            Critter crit = cacheMap.get(hashCoords(x,y));
+            return (crit != null) ? crit.toString() : null;
+        } else {
+            for (Critter c : population) {
+                if (c.x_coord == x && c.y_coord == y)
+                    return c.toString();
+            }
+            return null;
+        }
+    }
 	
 	/**
 	 * create and initialize a Critter subclass.
@@ -344,6 +372,8 @@ public abstract class Critter {
 		hash.get(aHash).add(c);
 	}
 
+	private static HashMap<Integer,Critter> cacheMap;
+    private static boolean isCached;
 	/**
 	 * This method performs the timestep for each Critter as follows
 	 * Allow each Critter to perform individual timestep
@@ -353,11 +383,14 @@ public abstract class Critter {
 	 * Add new Algae and babies to world
 	 */
 	public static void worldTimeStep() {
+        population.forEach(c -> cacheMap.put(hashCoords(c.x_coord, c.y_coord), c));
 		// do time step
+        isCached = true;
 		population.forEach(c -> {
 			c.hasMoved = false;
 			c.doTimeStep();
 		});
+        isCached = false;
 		// pre-process locations
 		Set<Integer> locations = new HashSet<>();
 		HashMap<Integer,LinkedList<Critter>> crits = new HashMap<>();
