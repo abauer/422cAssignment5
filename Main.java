@@ -12,12 +12,14 @@
 package assignment5; // cannot be in default package
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -38,6 +40,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.ServiceLoader;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /*
@@ -54,6 +58,8 @@ public class Main extends Application {
     private static boolean DEBUG = false; // Use it or not, as you wish!
     static PrintStream old = System.out;	// if you want to restore output to console
 
+    static GridPane grid;
+    static HashMap<Integer,StackPane> gridPanes;
 
     // Gets the package name.  The usage assumes that Critter and its subclasses are all in the same package.
     static {
@@ -69,66 +75,63 @@ public class Main extends Application {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
-//        File[] pkgFiles = new File("./src/assignment5").listFiles();
-//        if (pkgFiles == null) {
-//            System.err.println("Something's wrong with the package structure...");
-//            System.exit(1);
-//        }
-//        List<String> critClasses = Stream.of(pkgFiles)
-//            .map(File::getName) // convert to names
-//            .filter(s -> s.endsWith(".java")) // get class files
-//            .map(s -> s.substring(0, s.length() - 5)) // strip extension
-//            .filter(s -> { // save only subclasses of critter
-//                try {
-//                    return !s.equals("Critter") && Critter.class.isAssignableFrom(Class.forName(myPackage+"."+s));
-//                } catch (Exception e) {
-//                    return false;
-//                }
-//            })
-//            .collect(Collectors.toList());
-//        System.out.println(critClasses);
+        File[] pkgFiles = new File("./src/assignment5").listFiles();
+        if (pkgFiles == null) {
+            System.err.println("Something's wrong with the package structure...");
+            System.exit(1);
+        }
+        List<String> critClasses = Stream.of(pkgFiles)
+            .map(File::getName) // convert to names
+            .filter(s -> s.endsWith(".java")) // get class files
+            .map(s -> s.substring(0, s.length() - 5)) // strip extension
+            .filter(s -> { // save only subclasses of critter
+                try {
+                    return !s.equals("Critter") && Critter.class.isAssignableFrom(Class.forName(myPackage+"."+s));
+                } catch (Exception e) {
+                    return false;
+                }
+            })
+            .collect(Collectors.toList());
+        System.out.println(critClasses);
         launch(Main.class, args);
 	}
 
 	@Override
 	public void start(Stage stage) {
-
-
 // Use a border pane as the root for scene
 		BorderPane border = new BorderPane();
 
-	//	HBox hbox = addHBox();
-	//	border.setTop(hbox);
-		border.setLeft(addVBox());
+        File[] pkgFiles = new File("./src/assignment5").listFiles();
+        if (pkgFiles == null) {
+            System.err.println("Something's wrong with the package structure...");
+            System.exit(1);
+        }
+        List<String> critClasses = Stream.of(pkgFiles)
+                .map(File::getName) // convert to names
+                .filter(s -> s.endsWith(".java")) // get class files
+                .map(s -> s.substring(0, s.length() - 5)) // strip extension
+                .filter(s -> { // save only subclasses of critter
+                    try {
+                        return !s.equals("Critter") && Critter.class.isAssignableFrom(Class.forName(myPackage+"."+s));
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
 
-// Add a stack to the HBox in the top region
-	//	addStackPane(hbox);
+        ObservableList<String> ol = FXCollections.observableArrayList(critClasses);
 
-// To see only the grid in the center, uncomment the following statement
-// comment out the setCenter() call farther down
+		border.setLeft(addVBox(ol));
         border.setCenter(createGrid());
-
-// Choose either a TilePane or FlowPane for right region and comment out the
-// one you aren't using
-//		border.setRight(addFlowPane());
-//        border.setRight(addTilePane());
-
-// To see only the grid in the center, comment out the following statement
-// If both setCenter() calls are executed, the anchor pane from the second
-// call replaces the grid from the first call
-//		border.setCenter(addAnchorPane(addGridPane()));
-
 		Scene scene = new Scene(border);
 		stage.setScene(scene);
-		stage.setTitle("Layout Sample");
+		stage.setTitle("Critter World");
 		stage.show();
 	}
 
     /*
-     * Creates a grid for the center region with four columns and three rows
+     * Creates a grid for the center region
      */
-    static GridPane grid;
-    static HashMap<Integer,StackPane> gridPanes;
     public static GridPane createGrid() {
         grid = new GridPane();
         gridPanes = new HashMap<>();
@@ -155,54 +158,106 @@ public class Main extends Application {
         return (w>h) ? x+y*w : y+x*h;
     }
 
-/*
- * Creates an HBox with two buttons for the top region
- */
-
-	private HBox addHBox() {
-
-		HBox hbox = new HBox();
-		hbox.setPadding(new Insets(15, 12, 15, 12));
-		hbox.setSpacing(10);   // Gap between nodes
-		hbox.setStyle("-fx-background-color: #336699;");
-
-		Button buttonCurrent = new Button("Current");
-		buttonCurrent.setPrefSize(100, 20);
-
-		Button buttonProjected = new Button("Projected");
-		buttonProjected.setPrefSize(100, 20);
-
-		hbox.getChildren().addAll(buttonCurrent, buttonProjected);
-
-		return hbox;
-	}
-
 	/*
      * Creates a VBox with a list of links for the left region
      */
-	private VBox addVBox() {
+	private Node addVBox(ObservableList<String> crits) {
+        BorderPane border = new BorderPane();
+		GridPane grid = new GridPane();
+        grid.setVgap(10);
+        grid.setHgap(5);
+        border.setCenter(grid);
+		grid.setPadding(new Insets(10)); // Set all sides to 10
+		//vbox.setSpacing(8);              // Gap between nodes
 
-		VBox vbox = new VBox();
-		vbox.setPadding(new Insets(10)); // Set all sides to 10
-		vbox.setSpacing(8);              // Gap between nodes
+		Text addCritter = new Text("Add Critter of Type:");
+        addCritter.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+		grid.add(addCritter,0,0);
 
-		Text title = new Text("Data");
-		title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-		vbox.getChildren().add(title);
+        grid.add(new ComboBox(crits),1,0);
 
-		Hyperlink options[] = new Hyperlink[] {
-				new Hyperlink("Sales"),
-				new Hyperlink("Marketing"),
-				new Hyperlink("Distribution"),
-				new Hyperlink("Costs")};
+        Text amt = new Text("Amount:");
+        amt.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(amt,2,0);
 
-		for (int i=0; i<4; i++) {
-			// Add offset to left side to indent from title
-			VBox.setMargin(options[i], new Insets(0, 0, 0, 8));
-			vbox.getChildren().add(options[i]);
-		}
+        TextField addAmt = new TextField() {
+            @Override public void replaceText(int start, int end, String text) {
+                if (text.matches("[0-9]*")) {
+                    super.replaceText(start, end, text);
+                }
+            }
 
-		return vbox;
+            @Override public void replaceSelection(String text) {
+                if (text.matches("[0-9]*")) {
+                    super.replaceSelection(text);
+                }
+            }
+        };
+        addAmt.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(addAmt,3,0);
+
+        Button addCrit = new Button();
+        addCrit.setText("Add Critters");
+        addCrit.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        addCrit.setOnAction(event -> {});   // add action here
+        grid.add(addCrit,3,1);
+
+
+        Text stepWrld = new Text("Step World");
+        stepWrld.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(stepWrld,0,3);
+
+        Slider anim; //declared here so stepAmt can modify, used later
+
+        TextField stepAmt = new TextField() {
+            @Override public void replaceText(int start, int end, String text) {
+                if (text.matches("[0-9]*")) {
+                    super.replaceText(start, end, text);
+                }
+            }
+
+            @Override public void replaceSelection(String text) {
+                if (text.matches("[0-9]*")) {
+                    super.replaceSelection(text);
+                }
+            }
+        };
+        stepAmt.setOnAction(event -> {});   //add action here (update anim max also)
+        stepAmt.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(stepAmt,1,3);
+
+        Button step = new Button();
+        step.setText("Step");
+        step.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        step.setOnAction(event -> {});   // add action here
+        grid.add(step,3,4);
+
+        Text animWrld = new Text("Animate World");
+        animWrld.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(animWrld,0,6);
+
+        Button animate = new Button();
+        animate.setText("Animate");
+        animate.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        animate.setOnAction(event -> {});   // add action here
+        grid.add(animate,3,7);
+
+        anim = new Slider(1,10,1);
+        anim.setShowTickLabels(true);
+        anim.setShowTickMarks(true);
+        anim.setSnapToTicks(false);
+        anim.setMajorTickUnit((10-1)/4);
+        anim.setMinorTickCount(1);
+        grid.add(anim,1,6,3,1);
+
+        Button quit = new Button();
+        quit.setText("QUIT");
+        quit.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        quit.setTextFill(Color.FIREBRICK);
+        quit.setOnAction(event -> System.exit(0));   // add action here
+        border.setBottom(quit);
+
+		return border;
 	}
 
 	/*
