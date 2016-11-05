@@ -25,7 +25,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -35,10 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
-import java.util.ServiceLoader;
+import java.util.*;
 
 
 /*
@@ -80,16 +77,16 @@ public class Main extends Application {
 // Use a border pane as the root for scene
 		BorderPane border = new BorderPane();
 
-		HBox hbox = addHBox();
-		border.setTop(hbox);
+	//	HBox hbox = addHBox();
+	//	border.setTop(hbox);
 		border.setLeft(addVBox());
 
 // Add a stack to the HBox in the top region
-		addStackPane(hbox);
+	//	addStackPane(hbox);
 
 // To see only the grid in the center, uncomment the following statement
 // comment out the setCenter() call farther down
-        border.setCenter(addGridPane());
+        border.setCenter(createGrid());
 
 // Choose either a TilePane or FlowPane for right region and comment out the
 // one you aren't using
@@ -106,6 +103,37 @@ public class Main extends Application {
 		stage.setTitle("Layout Sample");
 		stage.show();
 	}
+
+    /*
+     * Creates a grid for the center region with four columns and three rows
+     */
+    static GridPane grid;
+    static HashMap<Integer,StackPane> gridPanes;
+    public static GridPane createGrid() {
+        grid = new GridPane();
+        gridPanes = new HashMap<>();
+        grid.setHgap(0);
+        grid.setVgap(0);
+        grid.setPadding(new Insets(10, 10, 10, 10));
+
+        for (int i = 0; i < Params.world_width; i++) {
+            for (int j = 0; j < Params.world_height; j++) {
+                StackPane sp = new StackPane();
+                Shape s = new Rectangle(5,5); s.setFill(Color.WHITE); s.setStroke(Color.WHITE);
+                sp.getChildren().addAll(s);
+                gridPanes.put(hashCoords(i,j),sp);
+                grid.add(sp, i, j);
+            }
+        }
+        grid.setGridLinesVisible(true);
+        return grid;
+    }
+
+    private static int hashCoords(int x, int y) {
+        int w = Params.world_width;
+        int h = Params.world_height;
+        return (w>h) ? x+y*w : y+x*h;
+    }
 
 /*
  * Creates an HBox with two buttons for the top region
@@ -190,44 +218,6 @@ public class Main extends Application {
 		HBox.setHgrow(stack, Priority.ALWAYS);
 
 	}
-
-	/*
-     * Creates a grid for the center region with four columns and three rows
-     */
-	private GridPane addGridPane() {
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(0, 10, 0, 10));
-
-        // Category in column 2, row 1
-        Text category = new Text("Sales:");
-        category.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        grid.add(category, 1, 0);
-
-        // Title in column 3, row 1
-        Text chartTitle = new Text("Current Year");
-        chartTitle.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        grid.add(chartTitle, 2, 0);
-
-        // Subtitle in columns 2-3, row 2
-        Text chartSubtitle = new Text("Goods and Services");
-        grid.add(chartSubtitle, 1, 1, 2, 1);
-
-        // Left label in column 1 (bottom), row 3
-        Text goodsPercent = new Text("Goods\n80%");
-        GridPane.setValignment(goodsPercent, VPos.BOTTOM);
-        grid.add(goodsPercent, 0, 2);
-
-        // Right label in column 4 (top), row 3
-        Text servicesPercent = new Text("Services\n20%");
-        GridPane.setValignment(servicesPercent, VPos.TOP);
-        grid.add(servicesPercent, 3, 2);
-
-        grid.setGridLinesVisible(true);
-        return grid;
-    }
 
 	public static void unused(String[] args){
         Iterator it = ServiceLoader.loadInstalled(Critter.class).iterator();

@@ -11,6 +11,15 @@
  */
 package assignment5;
 
+import javafx.geometry.Insets;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -433,12 +442,88 @@ public abstract class Critter {
 		babies.clear();
 	}
 
+	private static void updateGrid() {
+
+
+        /*/ Category in column 2, row 1
+        Text category = new Text("Sales:");
+        category.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+        grid.add(category, 1, 0);
+
+        // Title in column 3, row 1
+        Text chartTitle = new Text("Current Year");
+        chartTitle.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+        grid.add(chartTitle, 2, 0);
+
+        // Subtitle in columns 2-3, row 2
+        Text chartSubtitle = new Text("Goods and Services");
+        grid.add(chartSubtitle, 1, 1, 2, 1);
+
+        */// Left label in column 1 (bottom), row 3
+        /*Text goodsPercent = new Text("Goods 80%");
+        GridPane.setValignment(goodsPercent, VPos.BOTTOM);
+        grid.add(goodsPercent, 0, 2);
+
+        // Right label in column 4 (top), row 3
+        Text servicesPercent = new Text("Services 20%");
+        GridPane.setValignment(servicesPercent, VPos.TOP);
+        grid.add(servicesPercent, 3, 2);
+
+        grid.setGridLinesVisible(true);*/
+		//
+	}
+
+	/*
+     * Returns a square or a circle, according to shapeIndex
+     */
+	private static Shape getIcon(Critter.CritterShape shapeIndex) {
+		Shape s = null;
+		int size = 10;	//change the double arrays below if you change this
+
+		switch(shapeIndex) {
+			case SQUARE: s = new Rectangle(size, size);  break;
+			case CIRCLE: s = new Circle(size/2); break;
+			case DIAMOND: s = new Polygon(); ((Polygon) s).getPoints().addAll(new Double[]{
+					5.0, 0.0,
+					10.0, 5.0,
+					5.0, 10.0,
+					0.0, 5.0
+			}); break;
+			case STAR: s = new Polygon(); ((Polygon) s).getPoints().addAll(new Double[]{
+					0.0, 2.0,
+					2.0, 2.0,
+					5.0, 0.0,
+					8.0, 2.0,
+					10.0, 2.0,
+					8.0, 6.5,
+					9.5, 10.0,
+
+					5.0, 6.5,
+					0.5, 10.0,
+					2.0, 3.5,
+			}); break;
+			case TRIANGLE: s = new Polygon(); ((Polygon) s).getPoints().addAll(new Double[]{
+					5.0, 0.0,
+					10.0, 10.0,
+					0.0, 10.0
+			}); break;
+		}
+		return s;
+	}
+
 	/**
 	 * This method prints the world borders and Critters in the world to the screen
 	 * Typical use case is to be called from show command.
 	 */
 	public static void displayWorld() {
-		// create +---+
+		for(Critter c : population){
+			Shape s = getIcon(c.viewShape());
+			s.setFill(c.viewColor());
+			s.setStroke(c.viewOutlineColor());
+			StackPane sp = Main.gridPanes.get(hashCoords(c.x_coord,c.y_coord));
+			sp.getChildren().addAll(s);
+		}
+		/*// create +---+
 		String border = "+"
 				+ Collections.nCopies(Params.world_width,"-").stream().collect(Collectors.joining())
 				+ "+";
@@ -462,6 +547,6 @@ public abstract class Critter {
 			System.out.print("|\n");
 		}
 		// lower border
-		System.out.println(border);
+		System.out.println(border);*/
 	}
 }
