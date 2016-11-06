@@ -104,18 +104,8 @@ public abstract class Critter {
 	private void moveInDirection(int direction, int distance) {
 		if (hasMoved) return;
         hasMoved = true;
-		// right
-		if (direction == 7 || direction == 0 || direction == 1)
-			x_coord = (x_coord+distance)%Params.world_width;
-		// left
-		else if (direction == 3 || direction == 4 || direction == 5)
-			x_coord = (x_coord-distance)%Params.world_width;
-		// up
-		if (direction == 1 || direction == 2 || direction == 3)
-			y_coord = (y_coord-distance)%Params.world_height;
-		// down
-		else if (direction == 5 || direction == 6 || direction == 7)
-			y_coord = (y_coord+distance)%Params.world_height;
+        x_coord = updateX(x_coord, direction, distance);
+        y_coord = updateY(y_coord, direction, distance);
 	}
 
     /**
@@ -167,23 +157,29 @@ public abstract class Critter {
 	protected String look(int direction, boolean steps) {
         energy -= Params.look_energy_cost;
         int distance = steps ? 2 : 1;
-        int x = x_coord;
-        int y = y_coord;
-        // right
-        if (direction == 7 || direction == 0 || direction == 1)
-            x = (x_coord+distance)%Params.world_width;
-        // left
-        else if (direction == 3 || direction == 4 || direction == 5)
-            x = (x_coord-distance)%Params.world_width;
-        // up
-        if (direction == 1 || direction == 2 || direction == 3)
-            y = (y_coord-distance)%Params.world_height;
-        // down
-        else if (direction == 5 || direction == 6 || direction == 7)
-            y = (y_coord+distance)%Params.world_height;
+        int x = updateX(x_coord, direction, distance);
+        int y = updateY(y_coord, direction, distance);
         // return
         Critter crit = cacheMap.get(hashCoords(x,y)).get(0);
         return (crit != null) ? crit.toString() : null;
+    }
+
+    private int updateX(int x, int direction, int distance) {
+        if (direction == 7 || direction == 0 || direction == 1)
+            return (x+distance+Params.world_width)%Params.world_width;
+        else if (direction == 3 || direction == 4 || direction == 5)
+            return (x-distance+Params.world_width)%Params.world_width;
+        else
+            return x;
+    }
+
+    private int updateY(int y, int direction, int distance) {
+        if (direction == 1 || direction == 2 || direction == 3)
+            return (y-distance+Params.world_height)%Params.world_height;
+        else if (direction == 5 || direction == 6 || direction == 7)
+            return (y+distance+Params.world_height)%Params.world_height;
+        else
+            return y;
     }
 	
 	/**
