@@ -290,11 +290,13 @@ public class Main extends Application {
         timeline.setCycleCount(Timeline.INDEFINITE);
         animate.setOnAction(event -> {
             if (!animating) {
-                animate.setText("Stop Animation");
-                animating = true;
-                addCrit.setDisable(true);
-                step.setDisable(true);
-                timeline.play();
+                if (animationSpeed > 0) {
+                    animate.setText("Stop Animation");
+                    animating = true;
+                    addCrit.setDisable(true);
+                    step.setDisable(true);
+                    timeline.play();
+                }
             } else {
                 animate.setText("Start Animation");
                 animating = false;
@@ -342,13 +344,13 @@ public class Main extends Application {
 class NumberField extends TextField {
 
     @Override public void replaceText(int start, int end, String text) {
-        if (text.matches("\\d+")) {
+        if (text.matches("\\d*")) {
             super.replaceText(start, end, text);
         }
     }
 
     @Override public void replaceSelection(String text) {
-        if (text.matches("\\d+")) {
+        if (text.matches("\\d*")) {
             super.replaceSelection(text);
         }
     }
