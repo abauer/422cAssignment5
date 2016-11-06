@@ -12,6 +12,7 @@
 package assignment5;
 
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -521,15 +522,18 @@ public abstract class Critter {
 	 * Typical use case is to be called from show command.
 	 */
 	public static void displayWorld() {
+        Main.gridPanes.values().forEach(sp -> {
+            Node first = sp.getChildren().get(0);
+            sp.getChildren().clear();
+            sp.getChildren().add(first);
+        });
 		for(Critter c : population){
 			Shape s = getIcon(c.viewShape());
 			s.setFill(c.viewColor());
 			s.setStroke(c.viewOutlineColor());
 			StackPane sp = Main.gridPanes.get(hashCoords(c.x_coord,c.y_coord));
-
             try {
-                sp.getChildren().clear();   //remove all children
-                sp.getChildren().addAll(s); //add new children
+                sp.getChildren().add(s); //add new children
             } catch (Exception e) {
                 System.err.println(c.x_coord+" "+c.y_coord);
             }
