@@ -11,6 +11,8 @@
  */
 package assignment5; // cannot be in default package
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -32,6 +34,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.*;
 import java.util.*;
@@ -49,6 +52,10 @@ import java.util.stream.Stream;
  * May not use 'test' argument without specifying input file.
  */
 public class Main extends Application {
+
+    private static Timeline timeline;
+    private static int animationSpeed = 1;
+    private static boolean animating = false;
 
     static Scanner kb;	// scanner connected to keyboard input, or input file
     private static String inputFile;	// input file, used instead of keyboard input if specified
@@ -225,22 +232,25 @@ public class Main extends Application {
 
         TextField addAmt = new NumberField();
         addAmt.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        addAmt.setText("1");
         grid.add(addAmt,1,1);
 
         Button addCrit = new Button();
         addCrit.setText("Add Critters");
         addCrit.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+
         addCrit.setOnAction(event -> {
-            String critterType = dropdown.getValue();
-            int num = (addAmt.getText().length() > 0) ? Integer.parseInt(addAmt.getText()) : 1;
-            if (critterType != null) {
-                runCommand(String.format("make %s %d", dropdown.getValue(), num));
-                runCommand("show");
+            if (!animating) {
+                String critterType = dropdown.getValue();
+                int num = (addAmt.getText().length() > 0) ? Integer.parseInt(addAmt.getText()) : 1;
+                if (critterType != null) {
+                    runCommand(String.format("make %s %d", dropdown.getValue(), num));
+                    runCommand("show");
+                }
             }
         });
         grid.add(addCrit,1,2);
         grid.setHalignment(addCrit, HPos.RIGHT);
-
 
         Text stepWrld = new Text("Step World:");
         stepWrld.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
@@ -249,15 +259,18 @@ public class Main extends Application {
         TextField stepAmt = new NumberField();
         stepAmt.setOnAction(event -> {});   //add action here (update anim max also)
         stepAmt.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        stepAmt.setText("1");
         grid.add(stepAmt,1,5);
 
         Button step = new Button();
         step.setText("Step");
         step.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         step.setOnAction(event -> {
-            int num = (stepAmt.getText().length() > 0) ? Integer.parseInt(stepAmt.getText()) : 1;
-            runCommand(String.format("step %d", num));
-            runCommand("show");
+            if (!animating) {
+                int num = (stepAmt.getText().length() > 0) ? Integer.parseInt(stepAmt.getText()) : 1;
+                runCommand(String.format("step %d", num));
+                runCommand("show");
+            }
         });
         grid.add(step,1,6);
         grid.setHalignment(step, HPos.RIGHT);
@@ -267,20 +280,38 @@ public class Main extends Application {
         animWrld.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         grid.add(animWrld,0,9);
 
-        Button animate = new Button();
-        animate.setText("Animate");
-        animate.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        animate.setOnAction(event -> {});   // add action here
-        grid.add(animate,1,9);
-        grid.setHalignment(animate, HPos.RIGHT);
-
         Slider anim = new Slider(1,10,1);
         anim.setShowTickLabels(true);
         anim.setShowTickMarks(true);
         anim.setSnapToTicks(false);
         anim.setMajorTickUnit((10-1)/4);
         anim.setMinorTickCount(1);
+        anim.setOnMouseReleased(event -> {
+            anim.setValue(Math.round(anim.getValue()));
+            animationSpeed = (int)Math.round(anim.getValue());
+        });
         grid.add(anim,0,10,2,1);
+
+        Button animate = new Button();
+        animate.setText("Start Animation");
+        animate.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {
+            runCommand("step "+animationSpeed);
+            runCommand("show");
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        animate.setOnAction(event -> {
+            if (!animating) {
+                animate.setText("Stop Animation");
+                animating = true;
+                timeline.play();
+            } else {
+                animate.setText("Start Animation");
+                animating = false;
+                timeline.stop();
+            }
+        });   // add action here
+        grid.add(animate,1,9);
 
         BorderPane qbp = new BorderPane();
 
@@ -305,7 +336,6 @@ public class Main extends Application {
      * @return true if the command was a valid command (even if its parameters were invalid)
      */
     private static boolean runCommand(String input) {
-        System.err.println("Running "+input);
         String[] tokens = input.split("\\s+");
         try {
             if (tokens[0].equals("quit")){
@@ -351,7 +381,7 @@ public class Main extends Application {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("error processing: "+input);
+            System.err.println("error processing: "+input);
         }
         return true;
     }
@@ -360,13 +390,13 @@ public class Main extends Application {
 class NumberField extends TextField {
 
     @Override public void replaceText(int start, int end, String text) {
-        if (text.matches("[0-9]*")) {
+        if (text.matches("\\d+")) {
             super.replaceText(start, end, text);
         }
     }
 
     @Override public void replaceSelection(String text) {
-        if (text.matches("[0-9]*")) {
+        if (text.matches("\\d+")) {
             super.replaceSelection(text);
         }
     }
