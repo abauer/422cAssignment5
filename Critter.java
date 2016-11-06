@@ -529,8 +529,6 @@ public abstract class Critter {
 
             try {
                 sp.getChildren().clear();   //remove all children
-                Shape bot = new Rectangle(Main.BOXSIZE,Main.BOXSIZE); s.setFill(Color.WHITE); s.setStroke(Color.GRAY);
-                sp.getChildren().addAll(bot);
                 sp.getChildren().addAll(s); //add new children
             } catch (Exception e) {
                 System.err.println(c.x_coord+" "+c.y_coord);

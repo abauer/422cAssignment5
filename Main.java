@@ -287,7 +287,7 @@ public class Main extends Application {
      * @return true if the command was a valid command (even if its parameters were invalid)
      */
     private static boolean runCommand(String input) {
-        System.out.println("Running "+input);
+        System.err.println("Running "+input);
         String[] tokens = input.split("\\s+");
         try {
             if (tokens[0].equals("quit")){
