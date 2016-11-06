@@ -18,9 +18,8 @@ import assignment5.Critter.TestCritter;
 public class Algae extends TestCritter {
 
 	@Override
-	public CritterShape viewShape() {
-		return null;
-	}
+	public CritterShape viewShape() { return CritterShape.CIRCLE; }
+ 	public javafx.scene.paint.Color viewColor() { return javafx.scene.paint.Color.GREEN; }
 
 	public String toString() { return "@"; }
 	
