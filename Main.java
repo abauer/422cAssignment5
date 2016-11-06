@@ -62,7 +62,7 @@ public class Main extends Application {
     private static String myPackage;	// package of Critter file.  Critter cannot be in default pkg.
     private static boolean DEBUG = false; // Use it or not, as you wish!
     static PrintStream old = System.out;	// if you want to restore output to console
-    public static final double BOXSIZE = 5;
+    public static double BOXSIZE = 7.5;
     private static Text rs;
     private static String rsText;
     private static ByteArrayOutputStream baos;
@@ -112,12 +112,21 @@ public class Main extends Application {
 
 		border.setLeft(addVBox(ol));
         border.setCenter(createGrid());
+
 		Scene scene = new Scene(border);
 		stage.setScene(scene);
 		stage.setTitle("Critter World");
 		stage.show();
 
         createRunStatsWindow(ol);
+
+        border.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
+            double hsize = newValue.getHeight()/Params.world_height;
+            double wsize = (newValue.getWidth()-324)/Params.world_width;
+            BOXSIZE = hsize<wsize ? hsize-2 : wsize-2;
+            border.setCenter(createGrid());
+            Critter.displayWorld();
+        });
 	}
 
 	public static void updateRunStats(){
@@ -129,7 +138,11 @@ public class Main extends Application {
         } catch (Exception e) {
 
         }
-        rs.setText(baos.toString());
+        String stats = baos.toString();
+        if(stats.length()>73){
+            stats = stats.substring(0,67) + "...";
+        }
+        rs.setText(stats);
         baos.reset();
     }
 
@@ -235,6 +248,7 @@ public class Main extends Application {
             }
         });
         grid.add(addCrit,1,2);
+        grid.setHalignment(addCrit, HPos.RIGHT);
 
         Text stepWrld = new Text("Step World:");
         stepWrld.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
@@ -257,6 +271,7 @@ public class Main extends Application {
             }
         });
         grid.add(step,1,6);
+        grid.setHalignment(step, HPos.RIGHT);
 
 
         Text animWrld = new Text("Animate World");
