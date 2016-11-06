@@ -464,37 +464,6 @@ public abstract class Critter {
 		babies.clear();
 	}
 
-	private static void updateGrid() {
-
-
-        /*/ Category in column 2, row 1
-        Text category = new Text("Sales:");
-        category.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        grid.add(category, 1, 0);
-
-        // Title in column 3, row 1
-        Text chartTitle = new Text("Current Year");
-        chartTitle.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        grid.add(chartTitle, 2, 0);
-
-        // Subtitle in columns 2-3, row 2
-        Text chartSubtitle = new Text("Goods and Services");
-        grid.add(chartSubtitle, 1, 1, 2, 1);
-
-        */// Left label in column 1 (bottom), row 3
-        /*Text goodsPercent = new Text("Goods 80%");
-        GridPane.setValignment(goodsPercent, VPos.BOTTOM);
-        grid.add(goodsPercent, 0, 2);
-
-        // Right label in column 4 (top), row 3
-        Text servicesPercent = new Text("Services 20%");
-        GridPane.setValignment(servicesPercent, VPos.TOP);
-        grid.add(servicesPercent, 3, 2);
-
-        grid.setGridLinesVisible(true);*/
-		//
-	}
-
 	/*
      * Returns a square or a circle, according to shapeIndex
      */
@@ -526,7 +495,7 @@ public abstract class Critter {
         });
 		for(Critter c : population){
 			Shape s = getIcon(c.viewShape());
-			s.setFill(c.viewColor());
+			s.setFill(c.viewFillColor());
 			s.setStroke(c.viewOutlineColor());
 			StackPane sp = Main.gridPanes.get(hashCoords(c.x_coord,c.y_coord));
             sp.getChildren().add(s); //add new children
