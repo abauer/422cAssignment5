@@ -527,6 +527,8 @@ public abstract class Critter {
 			s.setStroke(c.viewOutlineColor());
 			StackPane sp = Main.gridPanes.get(hashCoords(c.x_coord,c.y_coord));
             sp.getChildren().clear();   //remove all children
+            Shape bot = new Rectangle(Main.BOXSIZE,Main.BOXSIZE); s.setFill(Color.WHITE); s.setStroke(Color.GRAY);
+            sp.getChildren().addAll(bot);
 			sp.getChildren().addAll(s); //add new children
 		}
 		Main.updateRunStats();
