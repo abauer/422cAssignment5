@@ -17,31 +17,23 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
-import javafx.scene.Node;
-import javafx.scene.Scene;
+import javafx.geometry.*;
+import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
-import javafx.scene.shape.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
+import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.*;
-import java.util.*;
-import java.util.Iterator;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -277,7 +269,9 @@ public class Main extends Application {
         animWrld.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         grid.add(animWrld,0,9);
 
+        Button animate = new Button();
         Slider anim = new Slider(1,10,1);
+
         anim.setShowTickLabels(true);
         anim.setShowTickMarks(true);
         anim.setSnapToTicks(false);
@@ -285,11 +279,11 @@ public class Main extends Application {
         anim.setMinorTickCount(1);
         anim.setOnMouseReleased(event -> {
             anim.setValue(Math.round(anim.getValue()));
+            animate.setDisable(anim.getValue() > 0);
             animationSpeed = (int)Math.round(anim.getValue());
         });
         grid.add(anim,0,10,2,1);
 
-        Button animate = new Button();
         animate.setText("Start Animation");
         animate.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> runSteps(animationSpeed)));
