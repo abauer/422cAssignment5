@@ -510,38 +510,16 @@ public abstract class Critter {
      * Returns a square or a circle, according to shapeIndex
      */
 	private static Shape getIcon(Critter.CritterShape shapeIndex) {
-		Shape s = null;
-		int size = 10;	//change the double arrays below if you change this
+		double size = Main.BOXSIZE;	//change the double arrays below if you change this
 
 		switch(shapeIndex) {
-			case SQUARE: s = new Rectangle(size, size);  break;
-			case CIRCLE: s = new Circle(size/2); break;
-			case DIAMOND: s = new Polygon(); ((Polygon) s).getPoints().addAll(new Double[]{
-					5.0, 0.0,
-					10.0, 5.0,
-					5.0, 10.0,
-					0.0, 5.0
-			}); break;
-			case STAR: s = new Polygon(); ((Polygon) s).getPoints().addAll(new Double[]{
-					0.0, 2.0,
-					2.0, 2.0,
-					5.0, 0.0,
-					8.0, 2.0,
-					10.0, 2.0,
-					8.0, 6.5,
-					9.5, 10.0,
-
-					5.0, 6.5,
-					0.5, 10.0,
-					2.0, 3.5,
-			}); break;
-			case TRIANGLE: s = new Polygon(); ((Polygon) s).getPoints().addAll(new Double[]{
-					5.0, 0.0,
-					10.0, 10.0,
-					0.0, 10.0
-			}); break;
+			case SQUARE: return new Rectangle(size, size);
+			case CIRCLE: return new Circle(size/2);
+			case DIAMOND: return new Diamond(size,size);
+			case STAR: return new Star(size,size);
+			case TRIANGLE: return new Triangle(size,size);
+            default: return new Polygon();
 		}
-		return s;
 	}
 
 	/**
@@ -554,32 +532,46 @@ public abstract class Critter {
 			s.setFill(c.viewColor());
 			s.setStroke(c.viewOutlineColor());
 			StackPane sp = Main.gridPanes.get(hashCoords(c.x_coord,c.y_coord));
-			sp.getChildren().addAll(s);
+            sp.getChildren().clear();   //remove all children
+			sp.getChildren().addAll(s); //add new children
 		}
-		/*// create +---+
-		String border = "+"
-				+ Collections.nCopies(Params.world_width,"-").stream().collect(Collectors.joining())
-				+ "+";
-		// upper border
-		System.out.println(border);
-		// pre-process all critters for simple lookups
-		HashMap<Integer,String> critterIcons = new HashMap<>();
-		for (Critter c : population)
-			critterIcons.put(hashCoords(c.x_coord, c.y_coord), c.toString());
-		// iterate over all locations
-		for (int r=0; r<Params.world_height; r++) { //"y"
-			System.out.print("|");
-			for (int c=0; c<Params.world_width; c++) { //"x"
-				int hash = hashCoords(c,r); // purposely "backwards"
-				if (critterIcons.containsKey(hash)) {
-					System.out.print(critterIcons.get(hash));
-				} else {
-					System.out.print(" ");
-				}
-			}
-			System.out.print("|\n");
-		}
-		// lower border
-		System.out.println(border);*/
 	}
+}
+
+class Diamond extends Polygon {
+    public Diamond(double width, double height){
+        getPoints().addAll(
+           width/2.0, 0.0,
+           width, height/2.0,
+           width/2.0, height,
+           0.0, height/2.0
+        );
+    }
+}
+
+class Triangle extends Polygon {
+    public Triangle(double width, double height) {
+        getPoints().addAll(
+           0.0, height,
+           width/2, 0.0,
+           width, height
+        );
+    }
+}
+
+class Star extends Polygon {
+    public Star(double width, double height) {
+        getPoints().addAll(
+           0.0, height/4,
+           width/4, height/4,
+           width/2, 0.0,
+           3*width/4, height/4,
+           width, height/4,
+           3*width/4, 2*height/3,
+           7*width/8, height,
+           width/2, 3*height/4,
+           width/8, height,
+           width/4, 2*height/3
+        );
+    }
 }
