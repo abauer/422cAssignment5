@@ -14,6 +14,7 @@ package assignment5; // cannot be in default package
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
@@ -55,6 +56,9 @@ public class Main extends Application {
     private static boolean DEBUG = false; // Use it or not, as you wish!
     static PrintStream old = System.out;	// if you want to restore output to console
     public static final double BOXSIZE = 5;
+    private static Text rs;
+    private static String rsText;
+    private static ByteArrayOutputStream baos;
 
     static GridPane grid;
     static HashMap<Integer,StackPane> gridPanes;
@@ -105,17 +109,64 @@ public class Main extends Application {
 		stage.setScene(scene);
 		stage.setTitle("Critter World");
 		stage.show();
+
+        createRunStatsWindow(ol);
 	}
+
+	public static void updateRunStats(){
+        try {
+            String critterPackage = Critter.class.getPackage().toString().split(" ")[1];
+            Class.forName(critterPackage + "." + rsText)
+                    .getMethod("runStats", List.class)
+                    .invoke(null, Critter.getInstances(rsText));
+        } catch (Exception e) {
+
+        }
+        rs.setText(baos.toString());
+        baos.reset();
+    }
+
+	private void createRunStatsWindow(ObservableList<String> crits){
+        BorderPane bp = new BorderPane();
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(10));
+
+        baos = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(baos));
+
+        Text selectCritter = new Text("Select Critter to see Stats:");
+        selectCritter.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(selectCritter,0,0);
+
+        ComboBox<String> rsSelect = new ComboBox(crits);
+        grid.setHalignment(rsSelect, HPos.RIGHT);
+        rsSelect.setOnAction(event -> {rsText = rsSelect.getValue(); updateRunStats();});
+        grid.add(rsSelect,1,0);
+
+        rs = new Text();
+        rs.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(rs,0,1,2,1);
+
+        bp.setCenter(grid);
+
+        Stage runStats = new Stage();
+        Scene s = new Scene(bp,470,80);
+        runStats.setScene(s);
+        runStats.setTitle("Critter Stats");
+        runStats.show();
+    }
 
     /*
      * Creates a grid for the center region
      */
-    public static GridPane createGrid() {
+    private static GridPane createGrid() {
         grid = new GridPane();
         gridPanes = new HashMap<>();
         grid.setHgap(0);
         grid.setVgap(0);
-        grid.setPadding(new Insets(10, 10, 10, 10));
+        grid.setPadding(new Insets(10));
 
         for (int i = 0; i < Params.world_width; i++) {
             for (int j = 0; j < Params.world_height; j++) {

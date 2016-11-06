@@ -533,6 +533,7 @@ public abstract class Critter {
                 System.err.println(c.x_coord+" "+c.y_coord);
             }
 		}
+		Main.updateRunStats();
 	}
 }
 
