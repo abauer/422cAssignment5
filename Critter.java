@@ -526,8 +526,12 @@ public abstract class Critter {
 			s.setFill(c.viewColor());
 			s.setStroke(c.viewOutlineColor());
 			StackPane sp = Main.gridPanes.get(hashCoords(c.x_coord,c.y_coord));
-            sp.getChildren().clear();   //remove all children
-			sp.getChildren().addAll(s); //add new children
+            try {
+                sp.getChildren().clear();   //remove all children
+                sp.getChildren().addAll(s); //add new children
+            } catch (Exception e) {
+                System.err.println(c.x_coord+" "+c.y_coord);
+            }
 		}
 	}
 }
