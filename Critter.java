@@ -519,20 +519,17 @@ public abstract class Critter {
 	 */
 	public static void displayWorld() {
         Main.gridPanes.values().forEach(sp -> {
-            Node first = sp.getChildren().get(0);
-            sp.getChildren().clear();
-            sp.getChildren().add(first);
+            if (sp.getChildren().size() > 1) {
+                List<Node> list = sp.getChildrenUnmodifiable();
+                sp.getChildren().removeAll(list.subList(1,list.size()));
+            }
         });
 		for(Critter c : population){
 			Shape s = getIcon(c.viewShape());
 			s.setFill(c.viewColor());
 			s.setStroke(c.viewOutlineColor());
 			StackPane sp = Main.gridPanes.get(hashCoords(c.x_coord,c.y_coord));
-            try {
-                sp.getChildren().add(s); //add new children
-            } catch (Exception e) {
-                System.err.println(c.x_coord+" "+c.y_coord);
-            }
+            sp.getChildren().add(s); //add new children
 		}
 		Main.updateRunStats();
 	}
