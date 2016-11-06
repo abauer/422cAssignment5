@@ -55,7 +55,7 @@ public class Main extends Application {
     private static String myPackage;	// package of Critter file.  Critter cannot be in default pkg.
     private static boolean DEBUG = false; // Use it or not, as you wish!
     static PrintStream old = System.out;	// if you want to restore output to console
-    public static final double BOXSIZE = 5;
+    public static double BOXSIZE = 7.5;
     private static Text rs;
     private static String rsText;
     private static ByteArrayOutputStream baos;
@@ -105,12 +105,21 @@ public class Main extends Application {
 
 		border.setLeft(addVBox(ol));
         border.setCenter(createGrid());
+
 		Scene scene = new Scene(border);
 		stage.setScene(scene);
 		stage.setTitle("Critter World");
 		stage.show();
 
         createRunStatsWindow(ol);
+
+        border.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
+            double hsize = newValue.getHeight()/Params.world_height;
+            double wsize = (newValue.getWidth()-324)/Params.world_width;
+            BOXSIZE = hsize<wsize ? hsize-2 : wsize-2;
+            border.setCenter(createGrid());
+            Critter.displayWorld();
+        });
 	}
 
 	public static void updateRunStats(){

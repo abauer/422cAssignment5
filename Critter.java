@@ -540,6 +540,8 @@ public abstract class Critter {
 
 class Diamond extends Polygon {
     public Diamond(double width, double height){
+        width-=2;
+        height-=2;
         getPoints().addAll(
            width/2.0, 0.0,
            width, height/2.0,
@@ -551,6 +553,8 @@ class Diamond extends Polygon {
 
 class Triangle extends Polygon {
     public Triangle(double width, double height) {
+        width-=2;
+        height-=2;
         getPoints().addAll(
            0.0, height,
            width/2, 0.0,
@@ -561,6 +565,8 @@ class Triangle extends Polygon {
 
 class Star extends Polygon {
     public Star(double width, double height) {
+        width-=2;
+        height-=2;
         getPoints().addAll(
            0.0, height/4,
            width/4, height/4,
