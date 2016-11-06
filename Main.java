@@ -12,6 +12,7 @@
 package assignment5; // cannot be in default package
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -110,6 +111,7 @@ public class Main extends Application {
 		stage.setScene(scene);
 		stage.setTitle("Critter World");
 		stage.show();
+        stage.setOnCloseRequest(event -> Platform.exit());
 
         createRunStatsWindow(ol);
 
@@ -286,7 +288,7 @@ public class Main extends Application {
         quit.setText("QUIT");
         quit.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         quit.setTextFill(Color.FIREBRICK);
-        quit.setOnAction(event -> System.exit(0));   // add action here
+        quit.setOnAction(event -> Platform.exit());   // add action here
         quit.setAlignment(Pos.CENTER);
         quit.setPadding(new Insets(10));
 
