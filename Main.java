@@ -17,31 +17,23 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
-import javafx.scene.Node;
-import javafx.scene.Scene;
+import javafx.geometry.*;
+import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
-import javafx.scene.shape.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
+import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.*;
-import java.util.*;
-import java.util.Iterator;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -243,10 +235,8 @@ public class Main extends Application {
             if (!animating) {
                 String critterType = dropdown.getValue();
                 int num = (addAmt.getText().length() > 0) ? Integer.parseInt(addAmt.getText()) : 1;
-                if (critterType != null) {
-                    runCommand(String.format("make %s %d", dropdown.getValue(), num));
-                    runCommand("show");
-                }
+                if (critterType != null)
+                    makeCritters(critterType, num);
             }
         });
         grid.add(addCrit,1,2);
@@ -268,8 +258,7 @@ public class Main extends Application {
         step.setOnAction(event -> {
             if (!animating) {
                 int num = (stepAmt.getText().length() > 0) ? Integer.parseInt(stepAmt.getText()) : 1;
-                runCommand(String.format("step %d", num));
-                runCommand("show");
+                runSteps(num);
             }
         });
         grid.add(step,1,6);
@@ -282,6 +271,9 @@ public class Main extends Application {
 
         Slider anim = new Slider(0,100,1);
         Text animateCount = new Text();
+        BorderPane animate = new BorderPane();
+        Button animateButton = new Button();
+
         anim.setShowTickLabels(true);
         anim.setShowTickMarks(true);
         anim.setSnapToTicks(false);
@@ -289,28 +281,28 @@ public class Main extends Application {
         anim.setMinorTickCount(5);
         anim.setOnMouseReleased(event -> {
             anim.setValue(Math.round(anim.getValue()));
+            animateButton.setDisable(anim.getValue() > 0);
             animationSpeed = (int)Math.round(anim.getValue());
             animateCount.setText("Speed: "+animationSpeed);
         });
         grid.add(anim,0,10,2,1);
 
-        BorderPane animate = new BorderPane();
-        Button animateButton = new Button();
-        animateButton.setText("Start");
+        animateButton.setText("Start Animation");
         animateButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {
-            runCommand("step "+animationSpeed);
-            runCommand("show");
-        }));
+        timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> runSteps(animationSpeed)));
         timeline.setCycleCount(Timeline.INDEFINITE);
         animateButton.setOnAction(event -> {
             if (!animating) {
                 animateButton.setText("Stop");
                 animating = true;
+                addCrit.setDisable(true);
+                step.setDisable(true);
                 timeline.play();
             } else {
                 animateButton.setText("Start");
                 animating = false;
+                addCrit.setDisable(false);
+                step.setDisable(false);
                 timeline.stop();
             }
         });   // add action here
@@ -338,60 +330,20 @@ public class Main extends Application {
 		return border;
 	}
 
-    /**
-     * Parses and runs an input command.
-     * @param input the trimmed raw input
-     * @return true if the command was a valid command (even if its parameters were invalid)
-     */
-    private static boolean runCommand(String input) {
-        String[] tokens = input.split("\\s+");
+	private static void runSteps(int steps) {
+        for (int i = 0; i < steps; i++)
+            Critter.worldTimeStep();
+        Critter.displayWorld();
+    }
+
+    private static void makeCritters(String type, int num) {
         try {
-            if (tokens[0].equals("quit")){
-                throw new IllegalArgumentException();
-            } else if (tokens[0].equals("show")) {
-                if (tokens.length > 1)
-                    throw new IllegalArgumentException();
-                Critter.displayWorld();
-            } else if (tokens[0].equals("step")) {
-                if (tokens.length == 1) {
-                    Critter.worldTimeStep();
-                } else if (tokens.length == 2) {
-                    int steps = Integer.parseInt(tokens[1]);
-                    for (int i = 0; i < steps; i++)
-                        Critter.worldTimeStep();
-                } else {
-                    throw new IllegalArgumentException();
-                }
-            } else if (tokens[0].equals("seed")) {
-                if (tokens.length != 2)
-                    throw new IllegalArgumentException();
-                int seed = Integer.parseInt(tokens[1]);
-                Critter.setSeed(seed);
-            } else if (tokens[0].equals("make")) {
-                if (tokens.length == 2) {
-                    Critter.makeCritter(tokens[1]);
-                } else if (tokens.length == 3) {
-                    int num = Integer.parseInt(tokens[2]);
-                    for (int i = 0; i < num; i++)
-                        Critter.makeCritter(tokens[1]);
-                } else {
-                    throw new IllegalArgumentException();
-                }
-            } else if (tokens[0].equals("stats")) {
-                if (tokens.length != 2)
-                    throw new IllegalArgumentException();
-                String critterPackage = Critter.class.getPackage().toString().split(" ")[1];
-                Class.forName(critterPackage + "." + tokens[1])
-                        .getMethod("runStats", List.class)
-                        .invoke(null, Critter.getInstances(tokens[1]));
-            } else {
-                return false;   //not a valid command
-            }
+            for (int i = 0; i < num; i++)
+                Critter.makeCritter(type);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("error processing: "+input);
+            System.err.println("Invalid critter!");
         }
-        return true;
+        Critter.displayWorld();
     }
 }
 
