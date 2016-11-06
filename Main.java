@@ -156,6 +156,7 @@ public class Main extends Application {
         grid.add(selectCritter,0,0);
 
         ComboBox<String> rsSelect = new ComboBox(crits);
+        rsSelect.setValue(crits.get(0));
         grid.setHalignment(rsSelect, HPos.RIGHT);
         rsSelect.setOnAction(event -> {rsText = rsSelect.getValue(); updateRunStats();});
         grid.add(rsSelect,1,0);
@@ -216,116 +217,117 @@ public class Main extends Application {
         addCritter.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
 		grid.add(addCritter,0,0);
 
-        ComboBox<String> dropdown = new ComboBox(crits);
-        grid.add(dropdown,1,0);
+        ComboBox<String> critterDropdown = new ComboBox(crits);
+        critterDropdown.setValue(crits.get(0));
+        grid.add(critterDropdown,1,0);
 
-        Text amt = new Text("Amount:");
-        amt.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        grid.add(amt,0,1);
+        Text amtLabel = new Text("Amount:");
+        amtLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(amtLabel,0,1);
 
-        TextField addAmt = new NumberField();
-        addAmt.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        addAmt.setText("1");
-        grid.add(addAmt,1,1);
+        TextField addField = new NumberField();
+        addField.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        addField.setText("1");
+        grid.add(addField,1,1);
 
-        Button addCrit = new Button();
-        addCrit.setText("Add Critters");
-        addCrit.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        Button addButton = new Button();
+        addButton.setText("Add Critters");
+        addButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
 
-        addCrit.setOnAction(event -> {
+        addButton.setOnAction(event -> {
             if (!animating) {
-                String critterType = dropdown.getValue();
-                int num = (addAmt.getText().length() > 0) ? Integer.parseInt(addAmt.getText()) : 1;
+                String critterType = critterDropdown.getValue();
+                int num = (addField.getText().length() > 0) ? Integer.parseInt(addField.getText()) : 1;
                 if (critterType != null)
                     makeCritters(critterType, num);
             }
         });
-        grid.add(addCrit,1,2);
-        grid.setHalignment(addCrit, HPos.RIGHT);
+        grid.add(addButton,1,2);
+        grid.setHalignment(addButton, HPos.RIGHT);
 
-        Text stepWrld = new Text("Step World:");
-        stepWrld.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        grid.add(stepWrld,0,5);
+        Text stepText = new Text("Step World:");
+        stepText.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(stepText,0,5);
 
-        TextField stepAmt = new NumberField();
-        stepAmt.setOnAction(event -> {});   //add action here (update anim max also)
-        stepAmt.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        stepAmt.setText("1");
-        grid.add(stepAmt,1,5);
+        TextField stepField = new NumberField();
+        stepField.setOnAction(event -> {});   //add action here (update anim max also)
+        stepField.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        stepField.setText("1");
+        grid.add(stepField,1,5);
 
-        Button step = new Button();
-        step.setText("Step");
-        step.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        step.setOnAction(event -> {
+        Button stepButton = new Button();
+        stepButton.setText("Step");
+        stepButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        stepButton.setOnAction(event -> {
             if (!animating) {
-                int num = (stepAmt.getText().length() > 0) ? Integer.parseInt(stepAmt.getText()) : 1;
+                int num = (stepField.getText().length() > 0) ? Integer.parseInt(stepField.getText()) : 1;
                 runSteps(num);
             }
         });
-        grid.add(step,1,6);
-        grid.setHalignment(step, HPos.RIGHT);
+        grid.add(stepButton,1,6);
+        grid.setHalignment(stepButton, HPos.RIGHT);
 
 
-        Text animWrld = new Text("Animate World");
-        animWrld.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        grid.add(animWrld,0,9);
+        Text animateLabel = new Text("Animate World");
+        animateLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(animateLabel,0,9);
 
-        Slider anim = new Slider(0,100,1);
-        Text animateCount = new Text();
-        BorderPane animate = new BorderPane();
-        Button animateButton = new Button();
+        Slider animSlider = new Slider(0,100,1);
+        Text animSpeedLabel = new Text();
+        BorderPane animBorderPane = new BorderPane();
+        Button animButton = new Button();
 
-        anim.setShowTickLabels(true);
-        anim.setShowTickMarks(true);
-        anim.setSnapToTicks(false);
-        anim.setMajorTickUnit(25);
-        anim.setMinorTickCount(5);
-        anim.setOnMouseReleased(event -> {
-            anim.setValue(Math.round(anim.getValue()));
-            animateButton.setDisable(anim.getValue() == 0);
-            animationSpeed = (int)Math.round(anim.getValue());
-            animateCount.setText("Speed: "+animationSpeed+" ");
+        animSlider.setShowTickLabels(true);
+        animSlider.setShowTickMarks(true);
+        animSlider.setSnapToTicks(false);
+        animSlider.setMajorTickUnit(25);
+        animSlider.setMinorTickCount(5);
+        animSlider.setOnMouseReleased(event -> {
+            animSlider.setValue(Math.round(animSlider.getValue()));
+            animButton.setDisable(animSlider.getValue() == 0);
+            animationSpeed = (int)Math.round(animSlider.getValue());
+            animSpeedLabel.setText("Speed: "+animationSpeed+" ");
         });
-        grid.add(anim,0,10,2,1);
+        grid.add(animSlider,0,10,2,1);
 
-        animateButton.setText("Start");
-        animateButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        animButton.setText("Start");
+        animButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> runSteps(animationSpeed)));
         timeline.setCycleCount(Timeline.INDEFINITE);
-        animateButton.setOnAction(event -> {
+        animButton.setOnAction(event -> {
             if (!animating && animationSpeed > 0) {
-                animateButton.setText("Stop");
+                animButton.setText("Stop");
                 animating = true;
-                addCrit.setDisable(true);
-                step.setDisable(true);
+                addButton.setDisable(true);
+                stepButton.setDisable(true);
                 timeline.play();
             } else {
-                animateButton.setText("Start");
+                animButton.setText("Start");
                 animating = false;
-                addCrit.setDisable(false);
-                step.setDisable(false);
+                addButton.setDisable(false);
+                stepButton.setDisable(false);
                 timeline.stop();
             }
         });   // add action here
-        animate.setRight(animateButton);
-        animateCount.setText("Speed: "+(int)anim.getValue()+" ");
-        animate.setCenter(animateCount);
-        grid.add(animate,1,9);
-        grid.setHalignment(animate,HPos.RIGHT);
+        animBorderPane.setRight(animButton);
+        animSpeedLabel.setText("Speed: "+(int)animSlider.getValue()+" ");
+        animBorderPane.setCenter(animSpeedLabel);
+        grid.add(animBorderPane,1,9);
+        grid.setHalignment(animBorderPane,HPos.RIGHT);
 
-        BorderPane qbp = new BorderPane();
+        BorderPane quitBorderPane = new BorderPane();
 
-        Button quit = new Button();
-        quit.setText("QUIT");
-        quit.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        quit.setTextFill(Color.FIREBRICK);
-        quit.setOnAction(event -> Platform.exit());   // add action here
-        quit.setAlignment(Pos.CENTER);
-        quit.setPadding(new Insets(10));
+        Button quitButton = new Button();
+        quitButton.setText("QUIT");
+        quitButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        quitButton.setTextFill(Color.FIREBRICK);
+        quitButton.setOnAction(event -> Platform.exit());   // add action here
+        quitButton.setAlignment(Pos.CENTER);
+        quitButton.setPadding(new Insets(10));
 
-        qbp.setCenter(quit);
-        qbp.setPadding(new Insets(10));
-        border.setBottom(qbp);
+        quitBorderPane.setCenter(quitButton);
+        quitBorderPane.setPadding(new Insets(10));
+        border.setBottom(quitBorderPane);
 
 		return border;
 	}

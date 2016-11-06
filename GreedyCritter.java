@@ -38,7 +38,6 @@ public class GreedyCritter extends Critter {
 
     @Override
     public void doTimeStep() {
-        // up to 5 tries per timestep
         for (int i=0; i<16; i++) {
             String lookResult = look(i%8, i>=8);
             if (lookResult != null && lookResult.equals("@")) {
