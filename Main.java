@@ -122,7 +122,11 @@ public class Main extends Application {
         } catch (Exception e) {
 
         }
-        rs.setText(baos.toString());
+        String stats = baos.toString();
+        if(stats.length()>73){
+            stats = stats.substring(0,67) + "...";
+        }
+        rs.setText(stats);
         baos.reset();
     }
 
@@ -224,6 +228,7 @@ public class Main extends Application {
             }
         });
         grid.add(addCrit,1,2);
+        grid.setHalignment(addCrit, HPos.RIGHT);
 
 
         Text stepWrld = new Text("Step World:");
@@ -244,6 +249,7 @@ public class Main extends Application {
             runCommand("show");
         });
         grid.add(step,1,6);
+        grid.setHalignment(step, HPos.RIGHT);
 
 
         Text animWrld = new Text("Animate World");
@@ -255,6 +261,7 @@ public class Main extends Application {
         animate.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         animate.setOnAction(event -> {});   // add action here
         grid.add(animate,1,9);
+        grid.setHalignment(animate, HPos.RIGHT);
 
         Slider anim = new Slider(1,10,1);
         anim.setShowTickLabels(true);
