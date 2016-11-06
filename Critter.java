@@ -527,6 +527,7 @@ public abstract class Critter {
             sp.getChildren().clear();   //remove all children
 			sp.getChildren().addAll(s); //add new children
 		}
+		Main.updateRunStats();
 	}
 }
 
