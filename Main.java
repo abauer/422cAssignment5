@@ -280,38 +280,46 @@ public class Main extends Application {
         animWrld.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         grid.add(animWrld,0,9);
 
-        Slider anim = new Slider(1,10,1);
+        Slider anim = new Slider(0,100,1);
+        Text animateCount = new Text();
         anim.setShowTickLabels(true);
         anim.setShowTickMarks(true);
         anim.setSnapToTicks(false);
-        anim.setMajorTickUnit((10-1)/4);
-        anim.setMinorTickCount(1);
+        anim.setMajorTickUnit(25);
+        anim.setMinorTickCount(5);
         anim.setOnMouseReleased(event -> {
             anim.setValue(Math.round(anim.getValue()));
             animationSpeed = (int)Math.round(anim.getValue());
+            animateCount.setText("Speed: "+animationSpeed);
         });
         grid.add(anim,0,10,2,1);
 
-        Button animate = new Button();
-        animate.setText("Start Animation");
-        animate.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        BorderPane animate = new BorderPane();
+        Button animateButton = new Button();
+        animateButton.setText("Start");
+        animateButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {
             runCommand("step "+animationSpeed);
             runCommand("show");
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
-        animate.setOnAction(event -> {
+        animateButton.setOnAction(event -> {
             if (!animating) {
-                animate.setText("Stop Animation");
+                animateButton.setText("Stop");
                 animating = true;
                 timeline.play();
             } else {
-                animate.setText("Start Animation");
+                animateButton.setText("Start");
                 animating = false;
                 timeline.stop();
             }
         });   // add action here
+        animate.setRight(animateButton);
+
+        animateCount.setText("Speed: "+(int)anim.getValue());
+        animate.setCenter(animateCount);
         grid.add(animate,1,9);
+        grid.setHalignment(animate,HPos.RIGHT);
 
         BorderPane qbp = new BorderPane();
 

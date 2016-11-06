@@ -71,7 +71,7 @@ public class Craig extends Critter {
 	}
 
 	@Override
-	public CritterShape viewShape() { return CritterShape.STAR; }
+	public CritterShape viewShape() { return CritterShape.SQUARE; }
 
 	@Override
 	public javafx.scene.paint.Color viewOutlineColor() { return javafx.scene.paint.Color.BLUE; }
