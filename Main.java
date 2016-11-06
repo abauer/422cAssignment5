@@ -105,7 +105,7 @@ public class Main extends Application {
 
 		border.setLeft(addVBox(ol));
         border.setCenter(createGrid());
-
+        grid.setAlignment(Pos.CENTER);
 		Scene scene = new Scene(border);
 		stage.setScene(scene);
 		stage.setTitle("Critter World");
@@ -119,6 +119,7 @@ public class Main extends Application {
             double wsize = (newValue.getWidth()-324)/Params.world_width;
             BOXSIZE = hsize<wsize ? hsize-2 : wsize-2;
             border.setCenter(createGrid());
+            grid.setAlignment(Pos.CENTER);
             Critter.displayWorld();
         });
 	}
