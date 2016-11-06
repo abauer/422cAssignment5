@@ -281,25 +281,23 @@ public class Main extends Application {
         anim.setMinorTickCount(5);
         anim.setOnMouseReleased(event -> {
             anim.setValue(Math.round(anim.getValue()));
-            animateButton.setDisable(anim.getValue() > 0);
+            animateButton.setDisable(anim.getValue() == 0);
             animationSpeed = (int)Math.round(anim.getValue());
-            animateCount.setText("Speed: "+animationSpeed);
+            animateCount.setText("Speed: "+animationSpeed+" ");
         });
         grid.add(anim,0,10,2,1);
 
-        animateButton.setText("Start Animation");
+        animateButton.setText("Start");
         animateButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> runSteps(animationSpeed)));
         timeline.setCycleCount(Timeline.INDEFINITE);
         animateButton.setOnAction(event -> {
-            if (!animating) {
-                if (animationSpeed > 0) {
-                    animateButton.setText("Stop Animation");
-                    animating = true;
-                    addCrit.setDisable(true);
-                    step.setDisable(true);
-                    timeline.play();
-                }
+            if (!animating && animationSpeed > 0) {
+                animateButton.setText("Stop");
+                animating = true;
+                addCrit.setDisable(true);
+                step.setDisable(true);
+                timeline.play();
             } else {
                 animateButton.setText("Start");
                 animating = false;
@@ -309,8 +307,7 @@ public class Main extends Application {
             }
         });   // add action here
         animate.setRight(animateButton);
-
-        animateCount.setText("Speed: "+(int)anim.getValue());
+        animateCount.setText("Speed: "+(int)anim.getValue()+" ");
         animate.setCenter(animateCount);
         grid.add(animate,1,9);
         grid.setHalignment(animate,HPos.RIGHT);
