@@ -25,7 +25,7 @@ public class Critter3 extends Critter {
 
     @Override
     public String toString() {
-        return "3"; //intended to be a " " (space
+        return "3"; //intended to be a " " space
     }
 
     public boolean fight(String not_used) {

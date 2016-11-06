@@ -160,8 +160,8 @@ public abstract class Critter {
         int x = updateX(x_coord, direction, distance);
         int y = updateY(y_coord, direction, distance);
         // return
-        Critter crit = cacheMap.get(hashCoords(x,y)).get(0);
-        return (crit != null) ? crit.toString() : null;
+        LinkedList<Critter> critList = cacheMap.get(hashCoords(x,y));
+        return (critList != null) ? critList.get(0).toString() : null;
     }
 
     private int updateX(int x, int direction, int distance) {
