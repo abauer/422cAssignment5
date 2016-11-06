@@ -31,10 +31,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 import java.util.Iterator;
 import java.util.List;
@@ -153,7 +150,8 @@ public class Main extends Application {
         addCritter.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
 		grid.add(addCritter,0,0);
 
-        grid.add(new ComboBox(crits),1,0);
+        ComboBox<String> dropdown = new ComboBox(crits);
+        grid.add(dropdown,1,0);
 
         Text amt = new Text("Amount:");
         amt.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
@@ -166,7 +164,14 @@ public class Main extends Application {
         Button addCrit = new Button();
         addCrit.setText("Add Critters");
         addCrit.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        addCrit.setOnAction(event -> {});   // add action here
+        addCrit.setOnAction(event -> {
+            String critterType = dropdown.getValue();
+            int num = (addAmt.getText().length() > 0) ? Integer.parseInt(addAmt.getText()) : 1;
+            if (critterType != null) {
+                runCommand(String.format("make %s %d", dropdown.getValue(), num));
+                runCommand("show");
+            }
+        });
         grid.add(addCrit,1,2);
 
 
@@ -182,7 +187,11 @@ public class Main extends Application {
         Button step = new Button();
         step.setText("Step");
         step.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        step.setOnAction(event -> {});   // add action here
+        step.setOnAction(event -> {
+            int num = (stepAmt.getText().length() > 0) ? Integer.parseInt(stepAmt.getText()) : 1;
+            runCommand(String.format("step %d", num));
+            runCommand("show");
+        });
         grid.add(step,1,6);
 
 
@@ -227,6 +236,7 @@ public class Main extends Application {
      * @return true if the command was a valid command (even if its parameters were invalid)
      */
     private static boolean runCommand(String input) {
+        System.out.println("Running "+input);
         String[] tokens = input.split("\\s+");
         try {
             if (tokens[0].equals("quit")){
@@ -271,6 +281,7 @@ public class Main extends Application {
                 return false;   //not a valid command
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("error processing: "+input);
         }
         return true;

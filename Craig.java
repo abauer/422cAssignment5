@@ -1,47 +1,28 @@
-/* CRITTERS Craig.java
- * EE422C Project 4 submission by
- * Anthony Bauer
- * amb6869
- * 16480
- * Grant Uy
- * gau84
- * 61480
- * Slip days used: <0>
- * Fall 2016
- */
 package assignment5;
 
-/*
- * Example critter
- */
 public class Craig extends Critter {
 
 	@Override
-	public CritterShape viewShape() {
-		return null;
-	}
-
-	@Override
 	public String toString() { return "C"; }
-	
+
 	private static final int GENE_TOTAL = 24;
 	private int[] genes = new int[8];
 	private int dir;
-	
+
 	public Craig() {
 		for (int k = 0; k < 8; k += 1) {
 			genes[k] = GENE_TOTAL / 8;
 		}
 		dir = Critter.getRandomInt(8);
 	}
-	
+
 	public boolean fight(String not_used) { return true; }
 
 	@Override
 	public void doTimeStep() {
 		/* take one step forward */
 		walk(dir);
-		
+
 		if (getEnergy() > 150) {
 			Craig child = new Craig();
 			for (int k = 0; k < 8; k += 1) {
@@ -65,7 +46,7 @@ public class Craig extends Critter {
 			turn = turn + 1;
 		}
 		assert(turn < 8);
-		
+
 		dir = (dir + turn) % 8;
 	}
 
@@ -88,4 +69,11 @@ public class Craig extends Critter {
 		System.out.print("" + total_left / (GENE_TOTAL * 0.01 * craigs.size()) + "% left   ");
 		System.out.println();
 	}
+
+	@Override
+	public CritterShape viewShape() { return CritterShape.SQUARE; }
+
+	@Override
+	public javafx.scene.paint.Color viewOutlineColor() { return javafx.scene.paint.Color.BLUE; }
+
 }

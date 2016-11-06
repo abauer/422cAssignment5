@@ -504,6 +504,8 @@ public abstract class Critter {
 	private static Shape getIcon(Critter.CritterShape shapeIndex) {
 		double size = Main.BOXSIZE;	//change the double arrays below if you change this
 
+        if (shapeIndex == null)
+            return new Polygon();
 		switch(shapeIndex) {
 			case SQUARE: return new Rectangle(size, size);
 			case CIRCLE: return new Circle(size/2);
