@@ -181,16 +181,8 @@ public abstract class Critter {
         else if (direction == 5 || direction == 6 || direction == 7)
             y = (y_coord+distance)%Params.world_height;
         // return
-        if (isCached) {
-            Critter crit = cacheMap.get(hashCoords(x,y));
-            return (crit != null) ? crit.toString() : null;
-        } else {
-            for (Critter c : population) {
-                if (c.x_coord == x && c.y_coord == y)
-                    return c.toString();
-            }
-            return null;
-        }
+        Critter crit = cacheMap.get(hashCoords(x,y)).get(0);
+        return (crit != null) ? crit.toString() : null;
     }
 	
 	/**
@@ -372,8 +364,7 @@ public abstract class Critter {
 		hash.get(aHash).add(c);
 	}
 
-	private static HashMap<Integer,Critter> cacheMap;
-    private static boolean isCached;
+	private static HashMap<Integer,LinkedList<Critter>> cacheMap;
 	/**
 	 * This method performs the timestep for each Critter as follows
 	 * Allow each Critter to perform individual timestep
@@ -383,26 +374,27 @@ public abstract class Critter {
 	 * Add new Algae and babies to world
 	 */
 	public static void worldTimeStep() {
-        population.forEach(c -> cacheMap.put(hashCoords(c.x_coord, c.y_coord), c));
+        cacheMap = new HashMap<>();
+        population.forEach(c ->
+                cacheMap.put(hashCoords(c.x_coord, c.y_coord), new LinkedList<>(Collections.singletonList(c)))
+        );
 		// do time step
-        isCached = true;
 		population.forEach(c -> {
 			c.hasMoved = false;
 			c.doTimeStep();
 		});
-        isCached = false;
 		// pre-process locations
 		Set<Integer> locations = new HashSet<>();
-		HashMap<Integer,LinkedList<Critter>> crits = new HashMap<>();
+		cacheMap = new HashMap<>();
 		Set<Integer> collisions = new HashSet<>();
 		for(Critter c : population) {	//identify collisions
 			if(c.energy<=0) //Critter is dead, ignore it
 				continue;
 			int hash = hashCoords(c.x_coord, c.y_coord);
 			// create list if necessary, then add critter
-			if (!crits.containsKey(hash))
-				crits.put(hash,new LinkedList<>());
-			crits.get(hash).add(c);
+			if (!cacheMap.containsKey(hash))
+				cacheMap.put(hash,new LinkedList<>());
+			cacheMap.get(hash).add(c);
 			// check if seen, adding to collisions if necessary
 			if (!locations.contains(hash))
 				locations.add(hash);
@@ -411,7 +403,7 @@ public abstract class Critter {
 		}
 		// handle collisions
 		for (Integer hash : collisions){
-			LinkedList<Critter> result = crits.get(hash);
+			LinkedList<Critter> result = cacheMap.get(hash);
 			int origx = unhashX(hash);
 			int origy = unhashY(hash);
 			while (result.size() > 1) {
@@ -425,12 +417,12 @@ public abstract class Critter {
 				boolean bMoved = B.x_coord!=origx || B.y_coord!=origy;
 				boolean bDied = B.energy <= 0;
 				//determine if move was valid
-				if (aMoved && crits.containsKey(hashCoords(A.x_coord,A.y_coord))){	//if space is already occupied, move back to conflict space
+				if (aMoved && cacheMap.containsKey(hashCoords(A.x_coord,A.y_coord))){	//if space is already occupied, move back to conflict space
 					A.x_coord = origx;
 					A.y_coord = origy;
 					aMoved = false;
 				}
-				if (bMoved && crits.containsKey(hashCoords(B.x_coord,B.y_coord))){	//if space is already occupied, move back to conflict space
+				if (bMoved && cacheMap.containsKey(hashCoords(B.x_coord,B.y_coord))){	//if space is already occupied, move back to conflict space
 					B.x_coord = origx;
 					B.y_coord = origy;
 					bMoved = false;
@@ -449,9 +441,9 @@ public abstract class Critter {
 					}
 				}
 				if(!aDied)
-					updateHash(A,crits);
+					updateHash(A,cacheMap);
 				if(!bDied)
-					updateHash(B,crits);
+					updateHash(B,cacheMap);
 			}
 		}
 		// remove dead stuff
