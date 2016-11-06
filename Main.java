@@ -243,10 +243,8 @@ public class Main extends Application {
             if (!animating) {
                 String critterType = dropdown.getValue();
                 int num = (addAmt.getText().length() > 0) ? Integer.parseInt(addAmt.getText()) : 1;
-                if (critterType != null) {
-                    runCommand(String.format("make %s %d", dropdown.getValue(), num));
-                    runCommand("show");
-                }
+                if (critterType != null)
+                    makeCritters(critterType, num);
             }
         });
         grid.add(addCrit,1,2);
@@ -268,8 +266,7 @@ public class Main extends Application {
         step.setOnAction(event -> {
             if (!animating) {
                 int num = (stepAmt.getText().length() > 0) ? Integer.parseInt(stepAmt.getText()) : 1;
-                runCommand(String.format("step %d", num));
-                runCommand("show");
+                runSteps(num);
             }
         });
         grid.add(step,1,6);
@@ -295,10 +292,7 @@ public class Main extends Application {
         Button animate = new Button();
         animate.setText("Start Animation");
         animate.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> {
-            runCommand("step "+animationSpeed);
-            runCommand("show");
-        }));
+        timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> runSteps(animationSpeed)));
         timeline.setCycleCount(Timeline.INDEFINITE);
         animate.setOnAction(event -> {
             if (!animating) {
@@ -334,60 +328,20 @@ public class Main extends Application {
 		return border;
 	}
 
-    /**
-     * Parses and runs an input command.
-     * @param input the trimmed raw input
-     * @return true if the command was a valid command (even if its parameters were invalid)
-     */
-    private static boolean runCommand(String input) {
-        String[] tokens = input.split("\\s+");
+	private static void runSteps(int steps) {
+        for (int i = 0; i < steps; i++)
+            Critter.worldTimeStep();
+        Critter.displayWorld();
+    }
+
+    private static void makeCritters(String type, int num) {
         try {
-            if (tokens[0].equals("quit")){
-                throw new IllegalArgumentException();
-            } else if (tokens[0].equals("show")) {
-                if (tokens.length > 1)
-                    throw new IllegalArgumentException();
-                Critter.displayWorld();
-            } else if (tokens[0].equals("step")) {
-                if (tokens.length == 1) {
-                    Critter.worldTimeStep();
-                } else if (tokens.length == 2) {
-                    int steps = Integer.parseInt(tokens[1]);
-                    for (int i = 0; i < steps; i++)
-                        Critter.worldTimeStep();
-                } else {
-                    throw new IllegalArgumentException();
-                }
-            } else if (tokens[0].equals("seed")) {
-                if (tokens.length != 2)
-                    throw new IllegalArgumentException();
-                int seed = Integer.parseInt(tokens[1]);
-                Critter.setSeed(seed);
-            } else if (tokens[0].equals("make")) {
-                if (tokens.length == 2) {
-                    Critter.makeCritter(tokens[1]);
-                } else if (tokens.length == 3) {
-                    int num = Integer.parseInt(tokens[2]);
-                    for (int i = 0; i < num; i++)
-                        Critter.makeCritter(tokens[1]);
-                } else {
-                    throw new IllegalArgumentException();
-                }
-            } else if (tokens[0].equals("stats")) {
-                if (tokens.length != 2)
-                    throw new IllegalArgumentException();
-                String critterPackage = Critter.class.getPackage().toString().split(" ")[1];
-                Class.forName(critterPackage + "." + tokens[1])
-                        .getMethod("runStats", List.class)
-                        .invoke(null, Critter.getInstances(tokens[1]));
-            } else {
-                return false;   //not a valid command
-            }
+            for (int i = 0; i < num; i++)
+                Critter.makeCritter(type);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("error processing: "+input);
+            System.err.println("Invalid critter!");
         }
-        return true;
+        Critter.displayWorld();
     }
 }
 
