@@ -304,10 +304,14 @@ public class Main extends Application {
             if (!animating) {
                 animate.setText("Stop Animation");
                 animating = true;
+                addCrit.setDisable(true);
+                step.setDisable(true);
                 timeline.play();
             } else {
                 animate.setText("Start Animation");
                 animating = false;
+                addCrit.setDisable(false);
+                step.setDisable(false);
                 timeline.stop();
             }
         });   // add action here
