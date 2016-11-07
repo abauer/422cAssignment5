@@ -31,6 +31,7 @@ import javafx.util.Duration;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -55,12 +56,9 @@ public class Main extends Application {
     private static String myPackage;	// package of Critter file.  Critter cannot be in default pkg.
     private static boolean DEBUG = false; // Use it or not, as you wish!
     static PrintStream old = System.out;	// if you want to restore output to console
-    public static double BOXSIZE = 7.5;
-    private static Text rs;
-    private static String rsText;
-    private static ByteArrayOutputStream baos;
 
-    static GridPane grid;
+    public static double BOXSIZE = 7.5;
+    static ArrayList<StatsWindow> statsWindows;
     static HashMap<Integer,StackPane> gridPanes;
 
     // Gets the package name.  The usage assumes that Critter and its subclasses are all in the same package.
@@ -84,6 +82,8 @@ public class Main extends Application {
 	public void start(Stage stage) {
 		BorderPane border = new BorderPane();
 
+        statsWindows = new ArrayList<>();
+
         File[] pkgFiles = new File("./src/assignment5").listFiles();
         if (pkgFiles == null) {
             System.err.println("Something's wrong with the package structure...");
@@ -105,80 +105,30 @@ public class Main extends Application {
 
 		border.setLeft(addVBox(ol));
         border.setCenter(createGrid());
-        grid.setAlignment(Pos.CENTER);
 		Scene scene = new Scene(border);
 		stage.setScene(scene);
 		stage.setTitle("Critter World");
 		stage.show();
         stage.setOnCloseRequest(event -> Platform.exit());
 
-        createRunStatsWindow(ol);
-
         border.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
             double hsize = newValue.getHeight()/Params.world_height;
             double wsize = (newValue.getWidth()-324)/Params.world_width;
             BOXSIZE = hsize<wsize ? hsize-2 : wsize-2;
             border.setCenter(createGrid());
-            grid.setAlignment(Pos.CENTER);
             Critter.displayWorld();
         });
 	}
 
-	public static void updateRunStats(){
-        try {
-            String critterPackage = Critter.class.getPackage().toString().split(" ")[1];
-            Class.forName(critterPackage + "." + rsText)
-                    .getMethod("runStats", List.class)
-                    .invoke(null, Critter.getInstances(rsText));
-        } catch (Exception e) {
-
-        }
-        String stats = baos.toString();
-        if(stats.length()>73){
-            stats = stats.substring(0,67) + "...";
-        }
-        rs.setText(stats);
-        baos.reset();
-    }
-
-	private void createRunStatsWindow(ObservableList<String> crits){
-        BorderPane bp = new BorderPane();
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(10));
-
-        baos = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos));
-
-        Text selectCritter = new Text("Select Critter to see Stats:");
-        selectCritter.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        grid.add(selectCritter,0,0);
-
-        ComboBox<String> rsSelect = new ComboBox(crits);
-        rsSelect.setValue(crits.get(0));
-        grid.setHalignment(rsSelect, HPos.RIGHT);
-        rsSelect.setOnAction(event -> {rsText = rsSelect.getValue(); updateRunStats();});
-        grid.add(rsSelect,1,0);
-
-        rs = new Text();
-        rs.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        grid.add(rs,0,1,2,1);
-
-        bp.setCenter(grid);
-
-        Stage runStats = new Stage();
-        Scene s = new Scene(bp,470,80);
-        runStats.setScene(s);
-        runStats.setTitle("Critter Stats");
-        runStats.show();
+    public static void updateRunStats() {
+        statsWindows.stream().forEach(StatsWindow::updateStats);
     }
 
     /*
      * Creates a grid for the center region
      */
     private static GridPane createGrid() {
-        grid = new GridPane();
+        GridPane grid = new GridPane();
         gridPanes = new HashMap<>();
         grid.setHgap(0);
         grid.setVgap(0);
@@ -193,6 +143,7 @@ public class Main extends Application {
                 grid.add(sp, i, j);
             }
         }
+        grid.setAlignment(Pos.CENTER);
         return grid;
     }
 
@@ -225,15 +176,12 @@ public class Main extends Application {
         amtLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         grid.add(amtLabel,0,1);
 
-        TextField addField = new NumberField();
+        TextField addField = new NumberField("1");
         addField.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        addField.setText("1");
         grid.add(addField,1,1);
 
-        Button addButton = new Button();
-        addButton.setText("Add Critters");
+        Button addButton = new Button("Add Critters");
         addButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-
         addButton.setOnAction(event -> {
             if (!animating) {
                 String critterType = critterDropdown.getValue();
@@ -243,20 +191,17 @@ public class Main extends Application {
             }
         });
         grid.add(addButton,1,2);
-        grid.setHalignment(addButton, HPos.RIGHT);
+        GridPane.setHalignment(addButton, HPos.RIGHT);
 
         Text stepText = new Text("Step World:");
         stepText.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         grid.add(stepText,0,5);
 
-        TextField stepField = new NumberField();
-        stepField.setOnAction(event -> {});   //add action here (update anim max also)
+        TextField stepField = new NumberField("1");
         stepField.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        stepField.setText("1");
         grid.add(stepField,1,5);
 
-        Button stepButton = new Button();
-        stepButton.setText("Step");
+        Button stepButton = new Button("Step");
         stepButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         stepButton.setOnAction(event -> {
             if (!animating) {
@@ -265,17 +210,17 @@ public class Main extends Application {
             }
         });
         grid.add(stepButton,1,6);
-        grid.setHalignment(stepButton, HPos.RIGHT);
+        GridPane.setHalignment(stepButton, HPos.RIGHT);
 
 
-        Text animateLabel = new Text("Animate World");
+        Text animateLabel = new Text("Animate World:");
         animateLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         grid.add(animateLabel,0,9);
 
         Slider animSlider = new Slider(0,100,1);
         Text animSpeedLabel = new Text();
         BorderPane animBorderPane = new BorderPane();
-        Button animButton = new Button();
+        Button animButton = new Button("Start");
 
         animSlider.setShowTickLabels(true);
         animSlider.setShowTickMarks(true);
@@ -290,7 +235,6 @@ public class Main extends Application {
         });
         grid.add(animSlider,0,10,2,1);
 
-        animButton.setText("Start");
         animButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> runSteps(animationSpeed)));
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -308,24 +252,47 @@ public class Main extends Application {
                 stepButton.setDisable(false);
                 timeline.stop();
             }
-        });   // add action here
+        });
         animBorderPane.setRight(animButton);
         animSpeedLabel.setText("Speed: "+(int)animSlider.getValue()+" ");
         animBorderPane.setCenter(animSpeedLabel);
         grid.add(animBorderPane,1,9);
-        grid.setHalignment(animBorderPane,HPos.RIGHT);
+        GridPane.setHalignment(animBorderPane,HPos.RIGHT);
+
+        Text runStatsLabel = new Text("Run Stats for Type:");
+        runStatsLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(runStatsLabel,0,12);
+
+        ComboBox<String> runStatsDropdown = new ComboBox(crits);
+        runStatsDropdown.setValue(crits.get(0));
+        grid.add(runStatsDropdown,1,12);
+
+        Button seeStats = new Button("See Stats");
+        seeStats.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        seeStats.setOnAction(event -> statsWindows.add(new StatsWindow(runStatsDropdown.getValue()).updateStats()));
+        grid.add(seeStats,1,13);
+        GridPane.setHalignment(seeStats, HPos.RIGHT);
 
         BorderPane quitBorderPane = new BorderPane();
+        HBox quitHbox = new HBox();
 
-        Button quitButton = new Button();
-        quitButton.setText("QUIT");
+        Button quitButton = new Button("QUIT");
         quitButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         quitButton.setTextFill(Color.FIREBRICK);
-        quitButton.setOnAction(event -> Platform.exit());   // add action here
+        quitButton.setOnAction(event -> Platform.exit());
         quitButton.setAlignment(Pos.CENTER);
         quitButton.setPadding(new Insets(10));
 
-        quitBorderPane.setCenter(quitButton);
+        Button clearWorldButton = new Button("Clear World");
+        clearWorldButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        clearWorldButton.setOnAction(event -> {Critter.clearWorld(); Critter.displayWorld();});
+        clearWorldButton.setAlignment(Pos.CENTER);
+        clearWorldButton.setPadding(new Insets(10));
+
+        quitHbox.getChildren().addAll(quitButton,clearWorldButton);
+        quitHbox.setSpacing(10);
+        quitHbox.setAlignment(Pos.CENTER);
+        quitBorderPane.setCenter(quitHbox);
         quitBorderPane.setPadding(new Insets(10));
         border.setBottom(quitBorderPane);
 
@@ -349,7 +316,58 @@ public class Main extends Application {
     }
 }
 
+class StatsWindow{
+
+    private String crit;
+    private ByteArrayOutputStream baos;
+    private Text stats;
+
+    public StatsWindow(String critter){
+        crit = critter;
+        baos = new ByteArrayOutputStream();
+
+        BorderPane bp = new BorderPane();
+
+        Text critterName = new Text("Viewing stats for "+critter);
+        critterName.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        bp.setTop(critterName);
+        bp.setPadding(new Insets(10));
+
+        stats = new Text("test");
+        stats.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        bp.setBottom(stats);
+
+        Stage stage = new Stage();
+        stage.setOnCloseRequest(event -> Main.statsWindows.remove(this));
+        Scene scene = new Scene(bp,470,80);
+        stage.setScene(scene);
+        stage.setTitle(critter+" Stats");
+        stage.show();
+    }
+
+    public StatsWindow updateStats(){
+        System.setOut(new PrintStream(baos));
+        try {
+            String critterPackage = Critter.class.getPackage().toString().split(" ")[1];
+            Class.forName(critterPackage + "." + crit)
+                    .getMethod("runStats", List.class)
+                    .invoke(null, Critter.getInstances(crit));
+        } catch (Exception e) {
+
+        }
+        String result = baos.toString();
+        if(result.length()>73){
+            result = result.substring(0,67) + "...";
+        }
+        stats.setText(result);
+        baos.reset();
+        return this;
+    }
+}
+
 class NumberField extends TextField {
+
+    public NumberField(String s){super(s);}
 
     @Override public void replaceText(int start, int end, String text) {
         if (text.matches("\\d*")) {
