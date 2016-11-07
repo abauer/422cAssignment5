@@ -1,11 +1,11 @@
-/* CRITTERS Critter.java
- * EE422C Project 4 submission by
+/* CRITTERS Main.java
+ * EE422C Project 5 submission by
  * Anthony Bauer
  * amb6869
  * 16480
  * Grant Uy
  * gau84
- * 61480
+ * 16480
  * Slip days used: <0>
  * Fall 2016
  */
