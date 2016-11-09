@@ -84,15 +84,19 @@ public class Main extends Application {
 
         statsWindows = new ArrayList<>();
 
-        File[] pkgFiles = new File("./src/assignment5").listFiles();
+        //File[] pkgFiles = new File("./src/assignment5").listFiles();
+        File[] pkgFiles = new File("./out/production/Lab5/assignment5").listFiles();
         if (pkgFiles == null) {
             System.err.println("Something's wrong with the package structure...");
             System.exit(1);
         }
         List<String> critClasses = Stream.of(pkgFiles)
                 .map(File::getName) // convert to names
-                .filter(s -> s.endsWith(".java")) // get class files
-                .map(s -> s.substring(0, s.length() - 5)) // strip extension
+                //.filter(s -> s.endsWith(".java")) // get class files
+                //.map(s -> s.substring(0, s.length() - 5)) // strip extension
+                .filter(s -> s.endsWith(".class")) // get class files
+                .filter(s -> !s.contains("$")) // get class files
+                .map(s -> s.substring(0, s.length() - 6)) // strip extension
                 .filter(s -> { // save only subclasses of critter
                     try {
                         return !s.equals("Critter") && Critter.class.isAssignableFrom(Class.forName(myPackage+"."+s));
