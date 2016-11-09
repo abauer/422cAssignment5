@@ -168,21 +168,40 @@ public class Main extends Application {
         border.setCenter(grid);
 		grid.setPadding(new Insets(10)); // Set all sides to 10
 
+        Text seedLabel = new Text("Select a Seed:");
+        seedLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(seedLabel,0,0);
+
+        TextField seedField = new NumberField(""+Critter.getRandomInt(Integer.MAX_VALUE));
+        Critter.setSeed(Integer.valueOf(seedField.getText()));
+        seedField.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        grid.add(seedField,1,0);
+
+        Button setSeed = new Button("Set Seed");
+        setSeed.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+        setSeed.setOnAction(event -> {
+            if (!animating) {
+                Critter.setSeed(Integer.valueOf(seedField.getText()));
+            }
+        });
+        grid.add(setSeed,1,1);
+        GridPane.setHalignment(setSeed,HPos.RIGHT);
+
 		Text addCritter = new Text("Add Critter of Type:");
         addCritter.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-		grid.add(addCritter,0,0);
+		grid.add(addCritter,0,4);
 
         ComboBox<String> critterDropdown = new ComboBox(crits);
         critterDropdown.setValue(crits.get(0));
-        grid.add(critterDropdown,1,0);
+        grid.add(critterDropdown,1,4);
 
         Text amtLabel = new Text("Amount:");
         amtLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        grid.add(amtLabel,0,1);
+        grid.add(amtLabel,0,5);
 
         TextField addField = new NumberField("1");
         addField.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        grid.add(addField,1,1);
+        grid.add(addField,1,5);
 
         Button addButton = new Button("Add Critters");
         addButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
@@ -194,16 +213,16 @@ public class Main extends Application {
                     makeCritters(critterType, num);
             }
         });
-        grid.add(addButton,1,2);
+        grid.add(addButton,1,6);
         GridPane.setHalignment(addButton, HPos.RIGHT);
 
         Text stepText = new Text("Step World:");
         stepText.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        grid.add(stepText,0,5);
+        grid.add(stepText,0,9);
 
         TextField stepField = new NumberField("1");
         stepField.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        grid.add(stepField,1,5);
+        grid.add(stepField,1,9);
 
         Button stepButton = new Button("Step");
         stepButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
@@ -213,13 +232,13 @@ public class Main extends Application {
                 runSteps(num);
             }
         });
-        grid.add(stepButton,1,6);
+        grid.add(stepButton,1,10);
         GridPane.setHalignment(stepButton, HPos.RIGHT);
 
 
         Text animateLabel = new Text("Animate World:");
         animateLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        grid.add(animateLabel,0,9);
+        grid.add(animateLabel,0,13);
 
         Slider animSlider = new Slider(0,100,1);
         Text animSpeedLabel = new Text();
@@ -237,7 +256,7 @@ public class Main extends Application {
             animationSpeed = (int)Math.round(animSlider.getValue());
             animSpeedLabel.setText("Speed: "+animationSpeed+" ");
         });
-        grid.add(animSlider,0,10,2,1);
+        grid.add(animSlider,0,14,2,1);
 
         animButton.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         timeline = new Timeline(new KeyFrame(Duration.millis(500), event -> runSteps(animationSpeed)));
@@ -248,33 +267,35 @@ public class Main extends Application {
                 animating = true;
                 addButton.setDisable(true);
                 stepButton.setDisable(true);
+                setSeed.setDisable(true);
                 timeline.play();
             } else {
                 animButton.setText("Start");
                 animating = false;
                 addButton.setDisable(false);
                 stepButton.setDisable(false);
+                setSeed.setDisable(false);
                 timeline.stop();
             }
         });
         animBorderPane.setRight(animButton);
         animSpeedLabel.setText("Speed: "+(int)animSlider.getValue()+" ");
         animBorderPane.setCenter(animSpeedLabel);
-        grid.add(animBorderPane,1,9);
+        grid.add(animBorderPane,1,13);
         GridPane.setHalignment(animBorderPane,HPos.RIGHT);
 
         Text runStatsLabel = new Text("Run Stats for Type:");
         runStatsLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
-        grid.add(runStatsLabel,0,12);
+        grid.add(runStatsLabel,0,16);
 
         ComboBox<String> runStatsDropdown = new ComboBox(crits);
         runStatsDropdown.setValue(crits.get(0));
-        grid.add(runStatsDropdown,1,12);
+        grid.add(runStatsDropdown,1,16);
 
         Button seeStats = new Button("See Stats");
         seeStats.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         seeStats.setOnAction(event -> statsWindows.add(new StatsWindow(runStatsDropdown.getValue()).updateStats()));
-        grid.add(seeStats,1,13);
+        grid.add(seeStats,1,17);
         GridPane.setHalignment(seeStats, HPos.RIGHT);
 
         BorderPane quitBorderPane = new BorderPane();
