@@ -71,21 +71,22 @@ public class Main extends Application {
      * @param args args can be empty.  If not empty, provide two parameters -- the first is a file name, 
      * and the second is test (for test output, where all output to be directed to a String), or nothing.
      */
-	/**
-	 * @param args the command line arguments
-	 */
 	public static void main(String[] args) {
         launch(Main.class, args);
 	}
 
 	@Override
+    /**
+     * start method to launch javafx.
+     * @param stage the first stage window
+     */
 	public void start(Stage stage) {
 		BorderPane border = new BorderPane();
 
         statsWindows = new ArrayList<>();
 
         //File[] pkgFiles = new File("./src/assignment5").listFiles();
-        File[] pkgFiles = new File("./out/production/Lab5/assignment5").listFiles();
+        File[] pkgFiles = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()+"/assignment5").listFiles();
         if (pkgFiles == null) {
             System.err.println("Something's wrong with the package structure...");
             System.exit(1);
@@ -124,12 +125,15 @@ public class Main extends Application {
         });
 	}
 
+    /**
+     * updates every instance of a Critter's runStats
+     */
     public static void updateRunStats() {
         statsWindows.stream().forEach(StatsWindow::updateStats);
     }
 
-    /*
-     * Creates a grid for the center region
+    /**
+     * Creates a grid for the center region to display the world
      */
     private static GridPane createGrid() {
         GridPane grid = new GridPane();
@@ -151,14 +155,20 @@ public class Main extends Application {
         return grid;
     }
 
+    /**
+     * the hash method for accessing the stackpanes in the grid, see Critter.hashCorods
+     * @param x
+     * @param y
+     * @return an integer hash based off of the max width, max height, given x, and given y
+     */
     private static int hashCoords(int x, int y) {
         int w = Params.world_width;
         int h = Params.world_height;
         return (w>h) ? x+y*w : y+x*h;
     }
 
-	/*
-     * Creates a VBox with a list of links for the left region
+	/**
+     * Creates a VBox with all the buttons, fields, and labels for the View and Controller
      */
 	private Node addVBox(ObservableList<String> crits) {
         BorderPane border = new BorderPane();
@@ -324,12 +334,21 @@ public class Main extends Application {
 		return border;
 	}
 
+    /**
+     * runs the worldTimestep and updates the display
+     * @param steps number of steps to simulate
+     */
 	private static void runSteps(int steps) {
         for (int i = 0; i < steps; i++)
             Critter.worldTimeStep();
         Critter.displayWorld();
     }
 
+    /**
+     * makes a new critter
+     * @param type String representation of the Critter to make
+     * @param num number of new Critters
+     */
     private static void makeCritters(String type, int num) {
         try {
             for (int i = 0; i < num; i++)
@@ -347,6 +366,10 @@ class StatsWindow{
     private ByteArrayOutputStream baos;
     private Text stats;
 
+    /**
+     * Window to display a Critter's runStats
+     * @param critter the type of Critter to show stats for
+     */
     public StatsWindow(String critter){
         crit = critter;
         baos = new ByteArrayOutputStream();
@@ -370,6 +393,10 @@ class StatsWindow{
         stage.show();
     }
 
+    /**
+     * Update this window and the stats for this Critter
+     * @return this StatsWindow object for simplicity
+     */
     public StatsWindow updateStats(){
         System.setOut(new PrintStream(baos));
         try {
@@ -392,6 +419,10 @@ class StatsWindow{
 
 class NumberField extends TextField {
 
+    /**
+     * a type of TextField that restricts input to numbers only
+     * @param s starting number to display in the TextField
+     */
     public NumberField(String s){super(s);}
 
     @Override public void replaceText(int start, int end, String text) {
